@@ -1,0 +1,23 @@
+{
+    "welcome": {
+        "import": "from uix.baseclass.screens.auth import WelcomeScreen",
+        "object": "WelcomeScreen()",
+        "kv": "uix/kv/screens/auth/welcome.kv"
+    },
+    "register": {
+        "import": "from uix.baseclass.screens.auth import RegisterScreen",
+        "object": "RegisterScreen()",
+        "kv": "uix/kv/screens/auth/register.kv"
+    },
+    "login": {
+        "import": "from uix.baseclass.screens.auth import LoginScreen",
+        "object": "LoginScreen()",
+        "kv": "uix/kv/screens/auth/login.kv"
+    },
+    
+    "home": {
+        "import": "from uix.baseclass.screens.auth import HomeScreen",
+        "object": "HomeScreen()",
+        "kv": "uix/kv/screens/auth/home.kv"
+    }
+}
