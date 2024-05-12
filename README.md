@@ -10,7 +10,7 @@ A booking API with ride hailing and food delivery microservices.
 
 ### `Requirements`
 
-Requirements for are found in the respective folders i.e `backend/requirements.txt` and `frontend/requirements.txt`
+Requirements are found in the respective folders i.e `backend/requirements.txt` and `frontend/requirements.txt`
 
 ## `Development`
 
