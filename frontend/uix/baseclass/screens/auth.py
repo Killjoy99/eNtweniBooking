@@ -39,18 +39,15 @@ class LoginScreen(MDScreen):
         # connect to server and get login response
         try:
             login_status = connect(endpoint="/login", data=login_json)
-        except Exception as e:
-            pass
-        
-        if login_status:
             if login_status["status"] == True:
                 self.manager.push_replacement("home")
             elif login_status["status"] == False:
                 # make a popup and request creds again
                 print("Incorrect credentials")
-        else:
-            # Check connection and try again
-            pass
+        except Exception as e:
+            print("You are offline")
+        
+        
 
 class PasswordResetScreen(MDScreen):
     # changing screens also can be done in python
