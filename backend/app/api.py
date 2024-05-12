@@ -3,6 +3,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
+from models.user import User
 
 templates = Jinja2Templates(directory="templates")
 app = FastAPI()
@@ -29,6 +30,35 @@ async def index(request: Request):
         return JSONResponse(data)
 
     return templates.TemplateResponse("index.html", {"request": request, "data": data})
+
+
+@app.get("/register")
+async def register(request: Request):
+    return {"data": "register page"}
+
+
+def do_login(remember_me: bool = False, username: str = None, password: str = None):
+    if username != "admin" or password != "admin123":
+        return False
+    else:
+        return True
+    
+
+@app.post("/login", response_class=HTMLResponse, tags=["home"])
+async def login(request: Request, user: User):
+    # try to login with supplied credentials
+    # check username and password
+    print(user)
+    logged_in = do_login(remember_me=user.remember_me, username=user.username, password=user.password)
+    logged_in_status = {"status": logged_in}
+        
+    if "application/json" in request.headers.get("Accept", ""):
+        return JSONResponse(logged_in_status)
+
+    return templates.TemplateResponse("home.html", {"request": request, "user": user, "logged_in_status": logged_in_status})
+
+
+
 
 # A websocket for android client connection
 @app.websocket("/ws")

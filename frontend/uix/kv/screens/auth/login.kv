@@ -1,15 +1,59 @@
 <LoginScreen>
     md_bg_color: root.theme_cls.backgroundColor
 
-    MDLabel:
-        text: "Login Screen"
-        pos_hint: {'center_x': 0.5,'center_y': 0.5}
+    MDBoxLayout:
+        orientation: 'vertical'
+        Image:
+            adaptive_height: True
+            pos_hint: {'center_x': 0.5}
+            source: "data/images/logo2.png"
 
-        canvas.before:
-            Rotate:
-                angle: 45
+        # MDCard:
+        #     elevation: 2
+            
+        MDBoxLayout:
+            size_hint: .8, .5
+            orientation: 'vertical'
+            pos_hint: {'center_x': 0.5}
+                
+            MDBoxLayout:
+                orientation: 'vertical'
+                size_hint_x: 0.8
+                pos_hint: {'center_x': 0.5}
+                padding: 10
+                spacing: 20
 
-    MDButton:
-        on_release: root.manager.back()
-        MDButtonText:
-            text: 'Back'
+                MDTextField:
+                    id: username
+                    allow_copy: True
+                    focus: True
+                    validator: 'email'
+                    
+
+                MDTextField:
+                    id: password
+                    allow_copy: False
+                    password: True
+
+                    # MDTextFieldLeadingIcon:
+                    #     icon: 'lock'
+
+            MDButton:
+                on_release: root.login(root.do_remember_me, username.text, password.text)
+                pos_hint: {'center_x': 0.5}
+                radius: dp(2)
+                style: "filled"
+                md_bg_color: "#008080"
+                MDButtonText:
+                    text: "LOGIN"
+
+            MDBoxLayout:
+                orientation: 'horizontal'
+                MDCheckbox:
+                    on_state: root.remember_me(self.state)
+                    # adaptive_size: True
+                    # text: 'Remember me'
+
+                MDLabel:
+                    text: "Forgot password?"
+

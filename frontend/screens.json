@@ -16,8 +16,8 @@
     },
     
     "home": {
-        "import": "from uix.baseclass.screens.auth import HomeScreen",
+        "import": "from uix.baseclass.screens.home import HomeScreen",
         "object": "HomeScreen()",
-        "kv": "uix/kv/screens/auth/home.kv"
+        "kv": "uix/kv/screens/home.kv"
     }
 }

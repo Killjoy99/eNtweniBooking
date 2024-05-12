@@ -1,10 +1,70 @@
 <RegisterScreen>
     md_bg_color: root.theme_cls.backgroundColor
+    padding: 20
+    MDLabel:
+        adaptive_size: True
+        markup: True
+        halign: 'center'
+        text: "[size=20sp][b][color=#008080]Welcome to[/color][/b][/size]"
+        pos_hint: {'center_x': 0.5, "center_y": .8}
+
+    MDCard:
+            # elevation: 2
+        radius: 0
+        size_hint: .8, .38
+        pos_hint: {'center_x': 0.5, "center_y": .5}
+        canvas.before:
+            PushMatrix: 
+            Rotate:
+                angle: 45
+                origin: self.center
+        canvas.after:
+            PopMatrix:
+                
+        MDRelativeLayout:
+            Image:
+                adaptive_size: True
+                pos_hint: {'center_x': 0.5,'center_y': 0.5}
+                source: "data/images/logo.png"
+                # canvas.before:
+                #     PushMatrix: 
+                #     Rotate:
+                #         angle: 45
+                #         origin: self.center
+                # canvas.after:
+                #     PopMatrix:
 
     MDLabel:
-        text: "Register Screen"
+        adaptive_size: True
+        markup: True
+        halign: 'center'
+        text: "[b][color=#008080][size=36sp]eNtweni[/size][/color][/b]"
+        pos_hint: {'center_x': 0.2, "center_y": .67}
+        canvas.before:
+            PushMatrix: 
+            Rotate:
+                angle: 45
+                origin: self.center
+        canvas.after:
+            PopMatrix: 
+
+    MDLabel:
+        adaptive_size: True
+        markup: True
+        halign: 'center'
+        text: "[b][color=#008080][size=36sp]Booking[/size][/color][/b]"
+        pos_hint: {'center_x': 0.8, "center_y": .67}
+        canvas.before:
+            PushMatrix:
+            Rotate:
+                angle: -45
+                origin: self.center
+        canvas.after:
+            PopMatrix:
 
     MDButton:
-        on_release: root.manager.back()
+        on_release: root.manager.push("register")
+        pos_hint: {'center_x': 0.8, "center_y": .2}
+        radius: dp(2)
         MDButtonText:
-            text: 'Back'
+            text: "Register"

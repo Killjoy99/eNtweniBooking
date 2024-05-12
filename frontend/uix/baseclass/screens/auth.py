@@ -26,7 +26,31 @@ class RegisterScreen(MDScreen):
 
 class LoginScreen(MDScreen):
     """ A Screen with a list of all supported countries that can register on the app"""
-    pass
+    do_remember_me = False
+    
+    def remember_me(self, state):
+        if state == "down":
+            self.do_remember_me = True
+        else:
+            self.do_remember_me = False
+            
+    def login(self, remember_me: bool, username: str, password: str):
+        login_json = {"remember_me": remember_me, "username": username, "password": password}
+        # connect to server and get login response
+        try:
+            login_status = connect(endpoint="/login", data=login_json)
+        except Exception as e:
+            pass
+        
+        if login_status:
+            if login_status["status"] == True:
+                self.manager.push_replacement("home")
+            elif login_status["status"] == False:
+                # make a popup and request creds again
+                print("Incorrect credentials")
+        else:
+            # Check connection and try again
+            pass
 
 class PasswordResetScreen(MDScreen):
     # changing screens also can be done in python

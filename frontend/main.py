@@ -19,6 +19,7 @@ class EntweniBooking(MDApp):
         
         # set theme
         self.theme_cls.theme_style = "Light"
+        self.theme_cls.primary_palette = "Teal"
         # self.store = JsonStore("config.json")
         self.title = "EntweniBooking"
         self.icon = "data/images/logo.jpg"
