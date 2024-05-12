@@ -1,4 +1,5 @@
 .venv
 [Ss]cripts
-pycache
+__pycache__
 .vscode
+.pyc
