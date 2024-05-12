@@ -1,8 +1,21 @@
 from kivymd.uix.screen import MDScreen
-from kivy.properties import ObjectProperty
+from kivy.properties import ObjectProperty, StringProperty
+
+from applibs.connections import connect
+
 
 class WelcomeScreen(MDScreen):
     logo = ObjectProperty("data/images/logo.png")
+    status = StringProperty()
+    data = StringProperty()
+    try:
+        data = connect()
+        if not data:
+            status = "offline"
+        else:
+            status = "online"
+    except Exception as e:
+        pass
 
 class RegisterScreen(MDScreen):
     # changing screens also can be done in python

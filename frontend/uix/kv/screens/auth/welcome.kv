@@ -7,14 +7,44 @@
         text: "[b][color=#008080]Welcome to\n[size=36sp]eNtweni Booking[/size][/color][/b]"
         pos_hint: {'center_x': 0.5, "center_y": .8}
 
+    MDLabel:
+        adaptive_size: True
+        markup: True
+        halign: 'center'
+        text: f"[color=#008080]Online[/color]" if root.status == "online" else f"[color=#808080]Offline[/color]"
+        pos_hint: {'center_x': 0.5, "center_y": .9}
+
 
     MDCard:
-        elevation: 2
+        # elevation: 2
         size_hint: .8, .4
         pos_hint: {'center_x': 0.5, "center_y": .5}
 
-        Image:
-            source: "data/images/logo.jpg"
+        canvas.before:
+            PushMatrix: 
+            Rotate:
+                angle: 45
+                origin: self.center
+        canvas.after:
+            PopMatrix: 
+
+
+        # MDRelativeLayout:
+        #     Image:
+        #         # size_hint: 1, 1
+        #         pos_hint: {'right': 1.0,'center_y': 0.5}
+        #         source: "data/images/logo.jpg"
+        #         # canvas.before:
+        #         #     PushMatrix: 
+        #         #     Rotate:
+        #         #         angle: 45
+        #         #         origin: self.center
+        #         # canvas.after:
+        #         #     PopMatrix: 
+            
+        #     MDTextField:
+        #         pos_hint: {'center_x': 0.5, "center_y": .5}
+                
 
     MDBoxLayout:
         orientation: 'horizontal'

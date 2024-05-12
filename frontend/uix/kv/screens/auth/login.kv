@@ -3,6 +3,11 @@
 
     MDLabel:
         text: "Login Screen"
+        pos_hint: {'center_x': 0.5,'center_y': 0.5}
+
+        canvas.before:
+            Rotate:
+                angle: 45
 
     MDButton:
         on_release: root.manager.back()
