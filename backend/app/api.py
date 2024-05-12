@@ -32,9 +32,16 @@ async def index(request: Request):
     return templates.TemplateResponse("index.html", {"request": request, "data": data})
 
 
-@app.get("/register")
-async def register(request: Request):
-    return {"data": "register page"}
+@app.post("/register", response_class=HTMLResponse, tags=["home"])
+async def login(request: Request, user: User):
+    # try to login with supplied credentials
+    registered = do_register(remember_me=user.remember_me, username=user.username, password=user.password)
+    registered_status = {"status": logged_in}
+        
+    if "application/json" in request.headers.get("Accept", ""):
+        return JSONResponse(registered_status)
+
+    return templates.TemplateResponse("home.html", {"request": request, "user": user, "logged_in_status": logged_in_status})
 
 
 def do_login(remember_me: bool = False, username: str = None, password: str = None):
@@ -47,8 +54,6 @@ def do_login(remember_me: bool = False, username: str = None, password: str = No
 @app.post("/login", response_class=HTMLResponse, tags=["home"])
 async def login(request: Request, user: User):
     # try to login with supplied credentials
-    # check username and password
-    print(user)
     logged_in = do_login(remember_me=user.remember_me, username=user.username, password=user.password)
     logged_in_status = {"status": logged_in}
         

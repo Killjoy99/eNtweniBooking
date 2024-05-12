@@ -1,6 +1,8 @@
 from kivymd.uix.screen import MDScreen
 from kivy.properties import ObjectProperty, StringProperty
 
+from plyer import notification
+
 from applibs.connections import connect
 
 
@@ -43,6 +45,7 @@ class LoginScreen(MDScreen):
                 self.manager.push_replacement("home")
             elif login_status["status"] == False:
                 # make a popup and request creds again
+                notification.notify(title="eNtweniBooking", message="username or password Incorrect", ticker="ticker")
                 print("Incorrect credentials")
         except Exception as e:
             print("You are offline")
