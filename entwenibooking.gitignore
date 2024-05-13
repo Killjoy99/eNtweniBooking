@@ -1,0 +1,6 @@
+.venv
+[Ss]cripts
+__pycache__
+.vscode
+.pyc
+bootstrap

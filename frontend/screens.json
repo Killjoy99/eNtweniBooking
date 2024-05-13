@@ -14,6 +14,11 @@
         "object": "LoginScreen()",
         "kv": "uix/kv/screens/auth/login.kv"
     },
+    "password_reset": {
+        "import": "from uix.baseclass.screens.auth import PasswordResetScreen",
+        "object": "PasswordResetScreen()",
+        "kv": "uix/kv/screens/auth/password_reset.kv"
+    },
     
     "home": {
         "import": "from uix.baseclass.screens.home import HomeScreen",

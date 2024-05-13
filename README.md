@@ -54,6 +54,11 @@ python -m uvicorn main:app --reload          # run the backend app
     pip install -r requirements.txt
     python -m uvicorn main:app --reload          # run the backend app
 
+`Bootstrap`
+
+    Download bootstrap 5 and extact it to the static folder.
+    Rename the folder bootstrap
+
 ## `Deployment`
 
 The backend server will be deployed using `Nginx Unit`, an Nginx server built to deploy multiple web apps on the same server with just different port access.

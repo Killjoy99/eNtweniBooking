@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+    {% block head %}
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>eNtweni Booking - Welcome</title>
+            <link rel="stylesheet" href="{{ url_for('static', path='/bootstrap/css/bootstrap.min.css') }}">
+        </head>
+    {% endblock %}
+    <body>
+        {% block content%}
+        {% endblock %}
+
+        {% block styles %}
+        {% endblock %}
+
+        {% block scripts %}
+            <script src="{{ url_for('static', path='/bootstrap/js/bootstrap.min.js') }}"></script>
+        {% endblock %}
+    </body>
+</html>
