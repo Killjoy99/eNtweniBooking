@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block content %}
+    
+<div class="welcome-container">
+    <h1 class="welcome-title">{{ data.message }}</h1>
+    <p class="welcome-message">Connect with your friends and family in real-time using eNtweniChat. <b>Ngen' eNtweni</b></p>
+    <a href="{{ url_for('login' ) }}" class="gbtn btn-primary">Get Started</a>
+    <a href="/about" class="get-started-button">More</a>
+</div>
+{% endblock %}
+
+{% block styles %}
+<style>
+    body {
+        font-family: sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background-color: #f0f0f0;
+    }
+
+    .welcome-container {
+        text-align: center;
+        padding: 2rem;
+        border-radius: 10px;
+        background-color: #fff;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .welcome-title {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+
+    .welcome-message {
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+    }
+
+    .get-started-button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        background-color: #008cba;
+        color: #fff;
+        cursor: pointer;
+    }
+</style>
+{% endblock %}

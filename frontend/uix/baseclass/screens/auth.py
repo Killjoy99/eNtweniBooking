@@ -1,5 +1,6 @@
 from kivymd.uix.screen import MDScreen
 from kivy.properties import ObjectProperty, StringProperty
+from kivy.core.window import Window
 
 from plyer import notification
 
@@ -29,6 +30,17 @@ class RegisterScreen(MDScreen):
 class LoginScreen(MDScreen):
     """ A Screen with a list of all supported countries that can register on the app"""
     do_remember_me = False
+    def __init__(self, **kwargs):
+        super(LoginScreen, self).__init__(**kwargs)
+        Window.bind(on_key_down=self.handle_keyboard)
+    
+    def handle_keyboard(self, instance, keyboard, keycode, text, modifiers):
+        if self.ids.password.focus and keycode == 40:
+            self.login(self.do_remember_me, self.ids.username.text, self.ids.password.text)
+        # print(keycode)
+        # # Change focus with tab
+        # if self.ids.username.focus and keycode == 43:
+        #     self.ids.password.focus = True
     
     def remember_me(self, state):
         if state == "down":
@@ -37,6 +49,7 @@ class LoginScreen(MDScreen):
             self.do_remember_me = False
             
     def login(self, remember_me: bool, username: str, password: str):
+        
         login_json = {"remember_me": remember_me, "username": username, "password": password}
         # connect to server and get login response
         try:
@@ -46,9 +59,8 @@ class LoginScreen(MDScreen):
             elif login_status["status"] == False:
                 # make a popup and request creds again
                 notification.notify(title="eNtweniBooking", message="username or password Incorrect", ticker="ticker")
-                print("Incorrect credentials")
         except Exception as e:
-            print("You are offline")
+            notification.notify(title="eNtweniBooking", message="Check your connection...", toast=True)
         
         
 

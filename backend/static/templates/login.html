@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block head %}
+    <title>eNtweni Booking - Login</title>
+{% endblock %}
+
+{% block content %}
+
+    <form class="row g-3" method="post">
+        <div class="col-md-4">
+        <label for="username" class="form-label">Username: </label>
+        <input type="text" class="form-control is-valid" id="username", name="username">
+        </div>
+        <div class="col-md-4">
+        <label for="password" class="form-label">Password: </label>
+        <input type="text" class="form-control is-valid" id="password", name="password">
+        </div>
+        <div class="col-12">
+        <div class="form-check">
+            <input class="form-check-input is-invalid" type="checkbox" id="remember_me", name="remember_me">
+            <label class="form-check-label" for="remember_me">
+            Remember me
+            </label>
+        </div>
+        <input type="submit" value="Login">
+    </form>
+{% endblock %}
