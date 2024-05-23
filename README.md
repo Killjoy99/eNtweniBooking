@@ -1,5 +1,22 @@
 # `eNtweniBooking`
 
+
+## MY GIT Commands
+```sh
+git pull                    # request update from remote branch
+git add .                   # stage files for commit
+git commit -m "Message"     #commit the changes
+git push                    # push changes upstream
+
+# Create a new branch and work on it 
+git branch <branch_name>
+git checkout <branch_name>
+git commit -m "Message"
+git push -u origin <branch_name>
+
+```
+
+
 A booking API with ride hailing and food delivery microservices.
 
 ## `Tech Stack`
