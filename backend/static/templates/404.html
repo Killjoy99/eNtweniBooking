@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block head %}
+    <title>eNtweni Booking - Welcome</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/style.css') }}">
+{% endblock %}
+{% block content %}
+  <img src="{{ url_for('static', path='images/entweni-booking.png') }}" alt="Entweni Logo" class="logo">
+
+  <div class="container">
+    <h1>404 Not Found</h1>
+    <h2>Oops! Suphum' eNtweni.</h2>
+    <img src="{{ url_for('static', path='images/question-mark-leaves.jpg') }}" alt="Lost Illustration" class="illustration">
+    <div class="buttons">
+      <a href="/" class="btn">Home</a>
+      <a href="#" class="btn">Search</a>
+      <a href="#" class="btn">Contact Us</a>
+    </div>
+  </div>
+{% endblock %}
+{% block styles %}
+
+{% endblock %}

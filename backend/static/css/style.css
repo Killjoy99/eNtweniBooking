@@ -1,0 +1,106 @@
+/* Style.css */
+body {
+background-color: #def0f0;
+font-family: sans-serif;
+margin: 0;
+display: flex;
+justify-content: center;
+align-items: center;
+min-height: 100vh;
+}
+
+.container {
+text-align: center;
+padding: 50px;
+max-width: 600px;
+background-color: rgba(255, 255, 255, 0.8);
+border-radius: 5px;
+box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+font-size: 2.5rem;
+color: #a9c5c5;
+margin-bottom: 20px;
+}
+
+p {
+font-size: 1.2rem;
+/* color: #a9c5c5; */
+margin-bottom: 30px;
+}
+
+.illustration {
+width: 150px;
+height: auto;
+margin-bottom: 30px;
+}
+
+.buttons {
+display: flex;
+justify-content: space-around;
+flex-wrap: wrap;
+}
+
+.btn {
+background-color: #a9c5c5;
+color: #fff;
+padding: 10px 20px;
+border: none;
+border-radius: 5px;
+text-decoration: none;
+font-size: 1rem;
+margin: 5px;
+transition: background-color 0.2s ease-in-out;
+}
+
+.btn:hover {
+background-color: #87a8a8;
+}
+
+/* Optional: Add a subtle green gradient to the background */
+
+/* body::after {
+content: "";
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background-image: linear-gradient(to bottom, rgba(223, 240, 240, 0.8), rgba(223, 240, 240, 0));
+} */
+
+/* Replace image paths with your actual image locations */
+.logo {
+position: fixed;
+top: 0px;
+left: 0px;
+max-width: 200px;
+}
+
+.welcome-container {
+    text-align: center;
+    padding: 2rem;
+    border-radius: 10px;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.welcome-title {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.welcome-message {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+}
+
+.get-started-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #008cba;
+    color: #fff;
+    cursor: pointer;
+}

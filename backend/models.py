@@ -14,8 +14,8 @@ from sqlalchemy.orm import relationship
 
 # pydantic type that limits the range of primary keys
 PrimaryKey = conint(gt=0, lt=2147483647)
-NameStr = constr(regex=r"^(?!\s*$).+", strip_whitespace=True, min_length=3)
-OrganisationSlug = constr(regex=r"^[\w]+(?:_[\w]+)*$", min_length=3)
+NameStr = constr(pattern=r"^(?!\s*$).+", strip_whitespace=True, min_length=3)
+OrganisationSlug = constr(pattern=r"^[\w]+(?:_[\w]+)*$", min_length=3)
 
 
 # SQLAlchemy models....
@@ -58,10 +58,10 @@ class ResourceMixin(TimeStampMixin):
 # Pydantic models...
 class EntweniBookingBase(BaseModel):
     class Config:
-        orm_mode = True
+        from_attributes = True
         validate_assignment = True
         arbitrary_types_allowed = True
-        anystr_strip_whitespace = True
+        str_strip_whitespace = True
 
         json_encoders = {
             # custom output conversion for datetime

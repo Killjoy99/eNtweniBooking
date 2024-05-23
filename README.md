@@ -36,6 +36,11 @@ These are the development steps for both the frontend and the backend
     python main.py          # run the frontend app
 
 ### `Backend`
+Run backend
+```sh
+python run.py
+```
+For now navigate to "127.0.0.1:8000" for a custom 404 error on the frontend, webapp, to configure api next
 
 > The Folder Structure follows the netflix-dispatch fomular for fastapi apps. this is a robust structure that allows for exponential growth of the api without issues.
 
