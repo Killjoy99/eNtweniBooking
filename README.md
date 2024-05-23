@@ -43,22 +43,43 @@ These are the development steps for both the frontend and the backend
 ENTWENIBOOKING/backend
 ├── auth
 │   ├── __init__.py
-│   └── models.py
+│   ├── models.py
+│   ├── permissions.py
+│   ├── routers.py
+│   └── service.py
 ├── common
-│   └── __init__.py
+│   ├── utils
+│   │   ├── __init__.py
+│   │   ├── cli.py
+│   │   └── views.py
+│   ├── __init__.py
+│   └── managers.py
 ├── database
 │   └── __init__.py
 ├── forms
 │   └── __init__.py
+├── notification
+│   ├── __init__.py
+│   ├── models.py
+│   ├── routers.py
+│   └── service.py
 ├── organisation
 │   ├── __init__.py
-│   └── models.py
+│   ├── models.py
+│   ├── routers.py
+│   └── service.py
 ├── plugin
-│   └── __init__.py
+│   ├── __init__.py
+│   ├── models.py
+│   ├── routers.py
+│   └── service.py
 ├── plugins
 │   └── __init__.py
-├── services
-│   └── __init__.py
+├── product
+│   ├── __init__.py
+│   ├── models.py
+│   ├── routers.py
+│   └── service.py
 ├── static
 │   ├── bootstrap
 │   │   ├── css
@@ -66,10 +87,10 @@ ENTWENIBOOKING/backend
 │   │   └── js
 │   │       └── bootstrap.min.js
 │   └── templates
-│       ├── base.html
-│       ├── home.html
-│       ├── index.html
-│       └── login.html
+│       ├── base.html.j2
+│       ├── home.html.j2
+│       ├── index.html.j2
+│       └── login.html.j2
 ├── api.py
 ├── config.py
 ├── decorators.py
