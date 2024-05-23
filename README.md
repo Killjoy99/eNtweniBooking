@@ -19,12 +19,12 @@ These are the development steps for both the frontend and the backend
 ### `Frontend`
 
 `Linux`
-```bash
-cd frontend/
-python -m venv venv
-source venv/bin/activate # activate the virtual environment
-pip install -r requirements.txt
-python main.py          # run the frontend app
+```sh
+    cd frontend/
+    python -m venv venv
+    source venv/bin/activate # activate the virtual environment
+    pip install -r requirements.txt
+    python main.py          # run the frontend app
 ```
 
 `Windows`
@@ -38,72 +38,33 @@ python main.py          # run the frontend app
 ### `Backend`
 
 > The Folder Structure follows the netflix-dispatch fomular for fastapi apps. this is a robust structure that allows for exponential growth of the api without issues.
+
 ```sh
-.
+ENTWENIBOOKING/backend
 ├── auth
 │   ├── __init__.py
 │   └── models.py
+├── common
+│   └── __init__.py
+├── database
+│   └── __init__.py
 ├── forms
-│   ├── __pycache__
-│   │   ├── __init__.cpython-312.pyc
-│   │   ├── auth.cpython-312.pyc
-│   │   └── login.cpython-312.pyc
+│   └── __init__.py
+├── organisation
 │   ├── __init__.py
-│   └── auth.py
+│   └── models.py
+├── plugin
+│   └── __init__.py
+├── plugins
+│   └── __init__.py
 ├── services
-│   ├── __pycache__
-│   │   ├── __init__.cpython-312.pyc
-│   │   └── authentication.cpython-312.pyc
-│   ├── __init__.py
-│   └── authentication.py
+│   └── __init__.py
 ├── static
 │   ├── bootstrap
 │   │   ├── css
-│   │   │   ├── bootstrap-grid.css
-│   │   │   ├── bootstrap-grid.css.map
-│   │   │   ├── bootstrap-grid.min.css
-│   │   │   ├── bootstrap-grid.min.css.map
-│   │   │   ├── bootstrap-grid.rtl.css
-│   │   │   ├── bootstrap-grid.rtl.css.map
-│   │   │   ├── bootstrap-grid.rtl.min.css
-│   │   │   ├── bootstrap-grid.rtl.min.css.map
-│   │   │   ├── bootstrap-reboot.css
-│   │   │   ├── bootstrap-reboot.css.map
-│   │   │   ├── bootstrap-reboot.min.css
-│   │   │   ├── bootstrap-reboot.min.css.map
-│   │   │   ├── bootstrap-reboot.rtl.css
-│   │   │   ├── bootstrap-reboot.rtl.css.map
-│   │   │   ├── bootstrap-reboot.rtl.min.css
-│   │   │   ├── bootstrap-reboot.rtl.min.css.map
-│   │   │   ├── bootstrap-utilities.css
-│   │   │   ├── bootstrap-utilities.css.map
-│   │   │   ├── bootstrap-utilities.min.css
-│   │   │   ├── bootstrap-utilities.min.css.map
-│   │   │   ├── bootstrap-utilities.rtl.css
-│   │   │   ├── bootstrap-utilities.rtl.css.map
-│   │   │   ├── bootstrap-utilities.rtl.min.css
-│   │   │   ├── bootstrap-utilities.rtl.min.css.map
-│   │   │   ├── bootstrap.css
-│   │   │   ├── bootstrap.css.map
-│   │   │   ├── bootstrap.min.css
-│   │   │   ├── bootstrap.min.css.map
-│   │   │   ├── bootstrap.rtl.css
-│   │   │   ├── bootstrap.rtl.css.map
-│   │   │   ├── bootstrap.rtl.min.css
-│   │   │   └── bootstrap.rtl.min.css.map
+│   │   │   └── bootstrap.min.css
 │   │   └── js
-│   │       ├── bootstrap.bundle.js
-│   │       ├── bootstrap.bundle.js.map
-│   │       ├── bootstrap.bundle.min.js
-│   │       ├── bootstrap.bundle.min.js.map
-│   │       ├── bootstrap.esm.js
-│   │       ├── bootstrap.esm.js.map
-│   │       ├── bootstrap.esm.min.js
-│   │       ├── bootstrap.esm.min.js.map
-│   │       ├── bootstrap.js
-│   │       ├── bootstrap.js.map
-│   │       ├── bootstrap.min.js
-│   │       └── bootstrap.min.js.map
+│   │       └── bootstrap.min.js
 │   └── templates
 │       ├── base.html
 │       ├── home.html
@@ -111,13 +72,15 @@ python main.py          # run the frontend app
 │       └── login.html
 ├── api.py
 ├── config.py
+├── decorators.py
 ├── enums.py
 ├── exceptions.py
-├── extensions.py
 ├── logging.py
 ├── main.py
+├── models.py
 ├── rate_limiter.py
 ├── requirements.txt
+├── run.py
 ├── scheduler.py
 └── server-config.json
 ```
