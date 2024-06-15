@@ -1,0 +1,67 @@
+#: import MapView kivy_garden.mapview.MapView
+#: import MapMarker kivy_garden.mapview.MapMarker
+
+<MapScreen>
+    md_bg_color: self.theme_cls.backgroundColor
+    MapView:
+        id: mapview
+        lat: root.lat
+        lon: root.lon
+        zoom: root.zoom
+        double_tap_zoom: True
+
+        MapMarkerPopup:
+            id: driver_marker
+            # on_release: print("Marker Clicked")
+            lat: root.driver.lat
+            lon: root.driver.lon
+            is_open: True
+            # popup_size: dp(230), dp(130)
+
+            Bubble:
+                MDLabel:
+                    text: "[b]You[/b]"
+                    markup: True
+                    halign: "center"
+
+        MapMarkerPopup:
+            id: destination_marker
+            # on_release: print("Marker Clicked")
+            lat: root.destination.lat
+            lon: root.destination.lon
+            is_open: True
+
+            Bubble:
+                MDLabel:
+                    text: "[b]Destination[/b]"
+                    markup: True
+                    halign: "center"
+
+    MDFabButton:
+        pos_hint: {'right': 1,'center_y': 0.5}
+        icon: "plus"
+        on_release: mapview.zoom += root.zoom_factor
+
+    MDFabButton:
+        pos_hint: {'right': 1,'center_y': 0.4}
+        icon: "minus"
+        on_release: mapview.zoom -= root.zoom_factor
+
+    MDFabButton:
+        pos_hint: {'right': 1,'center_y': 0.3}
+        icon: "map-marker-radius-outline"
+        on_release: mapview.center_on(root.driver)
+
+    MDFabButton:
+        pos_hint: {'right': 1,'center_y': 0.2}
+        icon: "usb-flash-drive"
+        on_release: print(mapview.bbox)         # will use it to display restuarant dynamically
+
+    MDBoxLayout:
+        adaptive_height: True
+        MDLabel:
+            adaptive_height: True
+            text: f"Longitude: {mapview.lon}"
+        MDLabel:
+            adaptive_height: True
+            text: f"Latitude: {mapview.lat}"

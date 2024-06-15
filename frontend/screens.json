@@ -24,5 +24,11 @@
         "import": "from uix.baseclass.screens.home import HomeScreen",
         "object": "HomeScreen()",
         "kv": "uix/kv/screens/home.kv"
+    },
+
+    "map": {
+        "import": "from uix.baseclass.screens.map import MapScreen",
+        "object": "MapScreen()",
+        "kv": "uix/kv/screens/map.kv"
     }
 }

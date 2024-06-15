@@ -27,7 +27,7 @@ class UserRoles(EntweniBookingEnum):
     member = "Member"
     
     
-class EventType(DispatchEnum):
+class EventType(EntweniBookingEnum):
     other = "Other"  # default and catch-all (x resource created/updated, etc.)
     field_updated = "Field updated"  # for fields like title, description, tags, type, etc.
     assessment_updated = "Assessment updated"  # for priority, status, or severity changes

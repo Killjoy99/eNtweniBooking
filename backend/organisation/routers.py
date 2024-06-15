@@ -1,66 +1,46 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from pydantic.error_wrappers import ErrorWrapper, ValidationError
 
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
+from sqlalchemy import select
 
-# from backend.auth.permissions import (
-#     OrganisationOwnerPermission,
-#     PermissionsDependency,
-# )
-
-# from backend.auth.service import CurrentUser
-# from backend.database.core import DbSession
-# from backend.database.service import CommonParamenters, search_filter_sort_paginate
-from backend.enums import UserRoles
-# from backend.exceptions import ExistsError
-from backend.models import PrimaryKey
-
-from .models import (
-    OrganisationCreate,
-    OrganizationRead,
-    OrganisationUpdate,
-    OrganizationPagination,
-)
-from .service import create, get, get_by_name, update, add_user
+from database.core import get_db
+from organisation.models import Organisation
+from organisation.schemas import OrganisationCreate, OrganisationRead
 
 
-router = APIRouter()
+organisation_router = APIRouter()
 
 
-@router.get("", response_model=OrganizationPagination)
-async def get_organisations(common: CommonParamenters):
+@organisation_router.get("")
+async def get_organisations(db: async_sessionmaker[AsyncSession] = Depends(get_db)):
     """Get all aorganisations."""
-    return search_filter_sort_paginate(model="Organisation", **common)
+    statement = await db.execute(select(Organisation))
+    organisations = statement.scalars().all()
+    return {"organisations": organisations}
 
 
-@router.post("", response_model=OrganizationRead)
-async def create_organisation(db_session: DbSession, organisation_in: OrganisationCreate, current_user: CurrentUser,):
-    """ Creates a new organisation"""
-    organisation = get_by_name(db_session=db_session, name=organisation_in.name)
-    if organisation:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail=[{"message": "An organisation with this name already exists."}],
-        )
-    
-    # create the Organisation
-    organisation = create(db_session=db_session, organisation_in=organisation_in)
-    
-    # add the creator as the organisation owner
-    add_user(db_session=db_session, organisation=organisation, user=current_user, role=UserRoles.owner)
-    
-    #TODO: Add other methods like a project, default post etc.
-    
-    return organisation
+@organisation_router.post("")
+async def create_organisation(organisation: OrganisationCreate, db: async_sessionmaker[AsyncSession]=Depends(get_db)):
+    organisation_to_db = Organisation(**organisation.dict())
+    db.add(organisation_to_db)
+    await db.commit()
+    await db.refresh(organisation_to_db)
+    return organisation_to_db
+    # return {"detail": f"Created an Organisation: {organisation_to_db}"}
+    # return organisation_to_db
 
 
-@router.get("/{organisation_id}", response_model=OrganizationRead)
-async def get_organisation(db_session: DbSession, organisation_id: PrimaryKey):
+@organisation_router.get("/{organisation_id}")
+async def get_organisation(organisation_id: int, db: async_sessionmaker[AsyncSession]=Depends(get_db)):
     """ Get an organisation by id."""
-    organisation = get(db_session=db_session, organisation_id=organisation_id)
-    if not organisation:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=[{"message": "An organisation with this id des not exist"}],
-        )
-    return organisation
+    return {"detail": f"Got Organisation with ID {organisation_id}"}
+
+
+@organisation_router.put("/{organisation_id}")
+async def update_organisation(organisation_id: int, db: async_sessionmaker[AsyncSession]=Depends(get_db)):
+    return {"detail": f"Updated Organisation with ID: {organisation_id}"}
+
+
+@organisation_router.delete("/{organisation_id}")
+async def delete_organisation(organisation_id: int, db: async_sessionmaker[AsyncSession]=Depends(get_db)):
+    return {"detail": f"Deleted Organisation with ID:{organisation_id}"}
