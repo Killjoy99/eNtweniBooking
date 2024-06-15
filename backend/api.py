@@ -4,9 +4,12 @@ from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
-from models import OrganisationSlug
+from core.schemas import OrganisationSlug
+
 from auth.routers import auth_router, user_router
-# from backend.auth.service import get_current_user
+from organisation.routers import organisation_router
+from booking.routers import booking_router
+from product.routers import product_router
 
 
 class ErrorMessage(BaseModel):
@@ -39,10 +42,13 @@ authenticated_api_router = APIRouter()
 
 api_router.include_router(auth_router, prefix="/auth", tags=["auth"])
 api_router.include_router(user_router, prefix="/user", tags=["user"])
+api_router.include_router(organisation_router, prefix="/organisations", tags=["organisation"])
+api_router.include_router(booking_router, prefix="/bookings", tags=["bookings"])
+api_router.include_router(product_router, prefix="/products", tags=["products"])
 
 # NOTE: Other routers go here below in order
 
-@api_router.get("/healthcheck", name="healthcheck")
+@api_router.get("/healthcheck", name="healthcheck", tags=["healthcheck"])
 async def healthcheck():
     return {"status", "ok"}
 

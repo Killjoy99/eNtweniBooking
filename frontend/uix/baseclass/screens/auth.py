@@ -12,7 +12,7 @@ class WelcomeScreen(MDScreen):
     status = StringProperty()
     data = StringProperty()
     try:
-        data = connect()
+        data = connect(endpoint="/api/v1/healthcheck")
         if not data:
             status = "offline"
         else:
@@ -50,10 +50,11 @@ class LoginScreen(MDScreen):
             
     def login(self, remember_me: bool, username: str, password: str):
         
-        login_json = {"remember_me": remember_me, "username": username, "password": password}
+        # login_json = {"remember_me": remember_me, "username": username, "password": password}
+        login_json = {"username": username, "password": password}
         # connect to server and get login response
         try:
-            login_status = connect(endpoint="/login", data=login_json)
+            login_status = connect(endpoint="/api/v1/auth/login", data=login_json)
             if login_status["status"] == True:
                 self.manager.push_replacement("home")
             elif login_status["status"] == False:
