@@ -18,7 +18,7 @@ class EntweniBooking(MDApp):
         self.light_theme_color = "#008080"
         
         # set theme
-        self.theme_cls.theme_style = "Light"
+        self.theme_cls.theme_style = "Dark"
         self.theme_cls.primary_palette = "Teal"
         # self.store = JsonStore("config.json")
         self.title = "EntweniBooking"

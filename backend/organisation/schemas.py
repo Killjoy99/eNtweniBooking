@@ -10,13 +10,17 @@ class OrganisationBase(CustomBaseModel):
     name: str
     description: Optional[str] = Field(None, nullable=True)
     default: Optional[bool] = Field(False, nullable=True)
+    slug: Optional[str] = Field(nullable=True)
     # banner_enabled: Optional[bool] = Field(False, nullable=True)
     # banner_color: Optional[Color] = Field(None, nullable=True)
     # banner_text: Optional[NameStr] = Field(None, nullable=True)
 
 
-class OrganisationCreate(OrganisationBase):
-    pass
+class OrganisationCreate(CustomBaseModel):
+    name: str
+    description: Optional[str] = Field(None, nullable=True)
+    default: Optional[bool] = Field(False, nullable=True)
+    slug: Optional[str] = Field(nullable=True)
 
 
 # class OrganisationUpdate(CustomBaseModel):

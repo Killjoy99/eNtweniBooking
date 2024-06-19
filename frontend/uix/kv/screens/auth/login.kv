@@ -4,21 +4,9 @@
     MDCard:
         orientation: 'vertical'
         md_bg_color: root.theme_cls.backgroundColor
-        style: "elevated"
+        style: "outlined"
         pos_hint: {"center_x": .5, "center_y": .5}
         size_hint: .8, .7
-        # Sets custom properties.
-        theme_shadow_color: "Custom"
-        shadow_color: "green"
-        theme_bg_color: "Custom"
-        md_bg_color: "white"
-        md_bg_color_disabled: "grey"
-        theme_shadow_offset: "Custom"
-        shadow_offset: (1, -2)
-        theme_shadow_softness: "Custom"
-        shadow_softness: 1
-        theme_elevation_level: "Custom"
-        elevation_level: 2
         spacing: 20
         padding: 0,0,0,dp(60)
 
@@ -41,8 +29,6 @@
                     id: username
                     pos_hint: {'center_x': 0.5, "top": 1}
                     allow_copy: True
-                    focus: True
-                    validator: 'email'
                     on_text_validate: password.focus = True
 
                     MDTextFieldLeadingIcon:

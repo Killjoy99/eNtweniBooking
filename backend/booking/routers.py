@@ -1,18 +1,31 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from typing import Optional
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 
 from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
 from sqlalchemy import select
 
 from database.core import get_db
+from core.decorators import check_accept_header, render_template, return_json
 
-# from models import BookingModel
+from .models import Booking
+from .schemas import BookingCreate, BookingRead
 
 
 booking_router = APIRouter()
 
+
 @booking_router.get("")
-async def list_bookings():
-    return {"detail": "List of all bookings"}
+async def list_bookings(request: Request, is_template: Optional[bool]=Depends(check_accept_header), db: async_sessionmaker[AsyncSession] = Depends(get_db)):
+    """Get all bookings."""
+    statement = await db.execute(select(Booking))
+    bookings = statement.scalars().all()
+    data = {"bookings": bookings}
+    # data = {}
+    
+    if is_template:
+        return render_template(request=request, template_name="product/list.html", context=data)
+    else:
+        return bookings
 
 
 @booking_router.post("", name="create_booking")

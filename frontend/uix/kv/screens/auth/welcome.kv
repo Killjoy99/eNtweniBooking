@@ -8,31 +8,11 @@
         text: "[size=20sp][b][color=#008080]Welcome to[/color][/b][/size]"
         pos_hint: {'center_x': 0.5, "center_y": .8}
 
-    MDCard:
-        elevation: 2
-        radius: 0
+    Image:
+        adaptive_size: True
         size_hint: .8, .38
-        pos_hint: {'center_x': 0.5, "center_y": .5}
-        canvas.before:
-            PushMatrix: 
-            Rotate:
-                angle: 45
-                origin: self.center
-        canvas.after:
-            PopMatrix:
-                
-        MDRelativeLayout:
-            Image:
-                adaptive_size: True
-                pos_hint: {'center_x': 0.5,'center_y': 0.5}
-                source: "data/images/logo.png"
-                canvas.before:
-                    PushMatrix: 
-                    Rotate:
-                        angle: -45
-                        origin: self.center
-                canvas.after:
-                    PopMatrix:
+        pos_hint: {'center_x': 0.5,'center_y': 0.5}
+        source: "data/images/logo.png"
 
     MDLabel:
         adaptive_size: True

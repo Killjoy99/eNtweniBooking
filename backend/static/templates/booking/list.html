@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block head %}
+    <title>eNtweniBooking - List Bookings</title>
+    <!-- <link rel="stylesheet" href="{{ url_for('static', path='/css/style.css') }}"> -->
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/bootstrap.min.css') }}">
+{% endblock %}
+
+{% block content %}
+    {% for booking in bookings %}
+        <h1>My Bookings</h1>
+        <table>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Default</th>
+            <tbody>
+                <td>{{ booking.id }}</td>
+                <td>{{ booking.name }}</td>
+                <td>{{ booking.description }}</td>
+                <td>{{ booking.default }}</td>
+            </tbody>
+        </table>
+    {% endfor %}
+    
+{% endblock %}

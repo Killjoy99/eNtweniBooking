@@ -54,7 +54,7 @@ class LoginScreen(MDScreen):
         login_json = {"username": username, "password": password}
         # connect to server and get login response
         try:
-            login_status = connect(endpoint="/api/v1/auth/login", data=login_json)
+            login_status = connect(endpoint="/api/v1/login", data=login_json)
             if login_status["status"] == True:
                 self.manager.push_replacement("home")
             elif login_status["status"] == False:

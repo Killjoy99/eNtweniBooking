@@ -1,7 +1,11 @@
 <HomeScreen>
 # MDScreen:
-
+    # on_enter: root.add_organisations()
     md_bg_color: root.theme_cls.backgroundColor
 
-    MDLabel:
-        text: 'Home Screen'
+    MDList:
+        id: organisation_list
+        pos_hint: {'center_x': 0.5,'top': 1.0}
+        spacing: 10
+        MDLabel:
+            text: 'The List starts here'

@@ -10,11 +10,8 @@ from database.core import Base
 class Organisation(Base):
     __tablename__ = "organisations"
     
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(unique=True)
-    slug: Mapped[str]
-    default: Mapped[bool]
-    description: Mapped[str]
-    # banner_enabled: Mapped[bool]
-    # banner_color: Mapped[str]
-    # banner_text: Mapped[str]
+    slug: Mapped[str] = mapped_column(nullable=True)
+    default: Mapped[bool] = mapped_column(nullable=True)
+    description: Mapped[str] = mapped_column(nullable=True)

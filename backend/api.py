@@ -40,7 +40,7 @@ authenticated_api_router = APIRouter()
 # api_router.include_router(auth_router, prefix="/{organisation}/auth", tags=["auth"])
 
 
-api_router.include_router(auth_router, prefix="/auth", tags=["auth"])
+api_router.include_router(auth_router, tags=["auth"])
 api_router.include_router(user_router, prefix="/user", tags=["user"])
 api_router.include_router(organisation_router, prefix="/organisations", tags=["organisation"])
 api_router.include_router(booking_router, prefix="/bookings", tags=["bookings"])
