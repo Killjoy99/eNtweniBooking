@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncAttrs, AsyncSession
 
-from src.database.core import get_db
+from src.database.core import get_async_db
 from src.core.decorators import check_accept_header, render_template, return_json
 
 from .models import Product
@@ -16,7 +16,7 @@ product_router = APIRouter()
 
 
 @product_router.get("", name="read_products")
-async def get_products(request: Request, is_template: Optional[bool]=Depends(check_accept_header), db: async_sessionmaker[AsyncSession] = Depends(get_db)):
+async def get_products(request: Request, is_template: Optional[bool]=Depends(check_accept_header), db: async_sessionmaker[AsyncSession] = Depends(get_async_db)):
     """Get all products."""
     statement = await db.execute(select(Product))
     products = statement.scalars().all()

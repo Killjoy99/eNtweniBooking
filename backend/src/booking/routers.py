@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
 from sqlalchemy import select
 
-from src.database.core import get_db
+from src.database.core import get_async_db
 from src.core.decorators import check_accept_header, render_template, return_json
 
 from .models import Booking
@@ -15,7 +15,7 @@ booking_router = APIRouter()
 
 
 @booking_router.get("")
-async def list_bookings(request: Request, is_template: Optional[bool]=Depends(check_accept_header), db: async_sessionmaker[AsyncSession] = Depends(get_db)):
+async def list_bookings(request: Request, is_template: Optional[bool]=Depends(check_accept_header), db: async_sessionmaker[AsyncSession] = Depends(get_async_db)):
     """Get all bookings."""
     statement = await db.execute(select(Booking))
     bookings = statement.scalars().all()
@@ -28,7 +28,7 @@ async def list_bookings(request: Request, is_template: Optional[bool]=Depends(ch
 
 
 @booking_router.post("", name="create_booking")
-async def create_booking(request: Request, booking: BookingCreate, is_template: Optional[bool]=Depends(check_accept_header), db: async_sessionmaker[AsyncSession] = Depends(get_db)):
+async def create_booking(request: Request, booking: BookingCreate, is_template: Optional[bool]=Depends(check_accept_header), db: async_sessionmaker[AsyncSession] = Depends(get_async_db)):
     return {"detail": "Created a booking with ID [_id]"}
 
 

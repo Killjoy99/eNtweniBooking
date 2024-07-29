@@ -12,8 +12,7 @@ from fastapi.staticfiles import StaticFiles
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncAttrs, AsyncSession
 
-from src.database.core import get_db
-from src.core.config import STATIC_DIR
+from src.database.core import get_async_db
 from src.core.decorators import check_accept_header, render_template, return_json
 
 from .schemas import UserLoginResponseSchema, UserCreateSchema, UserLoginSchema, UserReadSchema, UserUpdateSchema
@@ -30,7 +29,7 @@ user_router = APIRouter()
 @auth_router.get("/me", name="me")#, response_model=UserRead)
 # async def get_me(*, db_session: DbSession, current_user: CurrentUser):
     # return current_user
-async def get_me(request: Request, db_session: async_sessionmaker[AsyncSession]=Depends(get_db), is_template: Optional[bool] = Depends(check_accept_header)):
+async def get_me(request: Request, db_session: async_sessionmaker[AsyncSession]=Depends(get_async_db), is_template: Optional[bool] = Depends(check_accept_header)):
     if is_template:
         return render_template(request=request, template_name="me.html")
     else:
@@ -41,13 +40,13 @@ async def get_me(request: Request, db_session: async_sessionmaker[AsyncSession]=
 async def signup(request: Request, is_template: Optional[bool]=Depends(check_accept_header)):
     if is_template:
         data = {}
-        return render_template(request=request, template_name="signup.html", context={"data": data})
+        return render_template(request=request, template_name="auth/signup.html", context={"data": data})
     else:
         data = {}
         return return_json(data=data)
 
 @auth_router.post("/signup", response_model=UserLoginResponseSchema)
-async def signup(request: Request, user: UserCreateSchema, db_session: async_sessionmaker[AsyncSession]=Depends(get_db), is_template: Optional[bool] = Depends(check_accept_header)):
+async def signup(request: Request, user: UserCreateSchema, db_session: async_sessionmaker[AsyncSession]=Depends(get_async_db), is_template: Optional[bool] = Depends(check_accept_header)):
     # first check if user already exists in DB
     # statement = await db.execute(select(User).where(User.username==user.username or User.email==user.email))
     # try:
@@ -74,7 +73,7 @@ async def signup(request: Request, user: UserCreateSchema, db_session: async_ses
 async def login(request: Request, is_template: Optional[bool]=Depends(check_accept_header)):
     if is_template:
         data = {}
-        return render_template(request=request, template_name="login.html", context={"data": data})
+        return render_template(request=request, template_name="auth/login.html", context={"data": data})
     else:
         data = {}
         return return_json(data=data)
@@ -82,13 +81,13 @@ async def login(request: Request, is_template: Optional[bool]=Depends(check_acce
 
 # login router
 @auth_router.post("/login", response_model=UserLoginResponseSchema)
-async def login(request: Request, user: UserLoginSchema, is_template: Optional[bool]=Depends(check_accept_header), db_session: async_sessionmaker[AsyncSession] = Depends(get_db)):
+async def login(request: Request, user: UserLoginSchema, is_template: Optional[bool]=Depends(check_accept_header), db_session: async_sessionmaker[AsyncSession] = Depends(get_async_db)):
     # return await get_user_by_login_identifier(db_session=db, login_identifier=user.email)
     return user
 
 # logout router
 @auth_router.post("/logout", name="logout")
-async def logout(request: Request, db_session: async_sessionmaker[AsyncSession]=Depends(get_db)):
+async def logout(request: Request, db_session: async_sessionmaker[AsyncSession]=Depends(get_async_db)):
     return {"detail": f"Logged out"}
 
 
@@ -99,11 +98,11 @@ async def read_users():
     return {"message": "Organisation users here and paginated"}
 
 @user_router.get("/{user_id}", name="read_user")
-async def get_user(user_id: int, db_session: async_sessionmaker[AsyncSession]=Depends(get_db)):
+async def get_user(user_id: int, db_session: async_sessionmaker[AsyncSession]=Depends(get_async_db)):
     return {"detail": f"Returning User with ID: {user_id}"}
 
 @user_router.post("", name="create_user")
-async def create_user(user: UserCreateSchema, db_session: async_sessionmaker[AsyncSession]=Depends(get_db)):
+async def create_user(user: UserCreateSchema, db_session: async_sessionmaker[AsyncSession]=Depends(get_async_db)):
     # user_to_db = User(**user.dict())
     # db.add(user_to_db)
     # await db.commit()
@@ -112,10 +111,10 @@ async def create_user(user: UserCreateSchema, db_session: async_sessionmaker[Asy
     return {"detail": f"Created User: {user}"}
 
 @user_router.put("/{user_id}", name="update_user")
-async def update_user(user_id: int, db_session: async_sessionmaker[AsyncSession]=Depends(get_db)):
+async def update_user(user_id: int, db_session: async_sessionmaker[AsyncSession]=Depends(get_async_db)):
     return {"detail": f"Updated user {user_id}"}
 
 @user_router.delete("/{user_id}", name="delete_user")
-async def delete_user(user_id: int, db_session: async_sessionmaker[AsyncSession]=Depends(get_db)):
+async def delete_user(user_id: int, db_session: async_sessionmaker[AsyncSession]=Depends(get_async_db)):
     return {"detail": f"Deleted user {user_id}"}
 

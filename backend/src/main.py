@@ -9,7 +9,7 @@ from fastapi.requests import Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.routing import compile_path
 
-from src.core.config import STATIC_DIR
+from src.core.config import settings
 from src.core.decorators import render_template, check_accept_header
 
 from .api import api_router
@@ -40,13 +40,13 @@ async def index(request: Request):
 async def default_page(request: Request, call_next):
     response = await call_next(request)
     if response.status_code == 404:
-        if STATIC_DIR:
+        if settings.STATIC_DIR:
             return render_template(request=request, template_name="404.html")
     return response
 
 # mount static files for the frontend
-if STATIC_DIR and path.isdir(STATIC_DIR):
-    frontend.mount("/", StaticFiles(directory=STATIC_DIR), name="static")
+if settings.STATIC_DIR and path.isdir(settings.STATIC_DIR):
+    frontend.mount("/", StaticFiles(directory=settings.STATIC_DIR), name="static")
 
 
 api.include_router(api_router)

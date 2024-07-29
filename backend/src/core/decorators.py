@@ -4,10 +4,10 @@ from fastapi import Depends, Request, status
 from fastapi.responses import JSONResponse
 from fastapi.templating import Jinja2Templates
 
-from src.core.config import STATIC_DIR
+from src.core.config import settings
 
 
-templates = Jinja2Templates(directory=path.join(STATIC_DIR, "templates"))
+templates = Jinja2Templates(directory=path.join(settings.STATIC_DIR, "templates"))
 
 
 def check_accept_header(request: Request) -> bool:
