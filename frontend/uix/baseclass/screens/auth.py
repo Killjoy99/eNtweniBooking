@@ -36,7 +36,7 @@ class LoginScreen(MDScreen):
     
     def handle_keyboard(self, instance, keyboard, keycode, text, modifiers):
         if self.ids.password.focus and keycode == 40:
-            self.login(self.do_remember_me, self.ids.username.text, self.ids.password.text)
+            self.login(self.do_remember_me, self.ids.email.text, self.ids.password.text)
         # print(keycode)
         # # Change focus with tab
         # if self.ids.username.focus and keycode == 43:
@@ -48,10 +48,10 @@ class LoginScreen(MDScreen):
         else:
             self.do_remember_me = False
             
-    def login(self, remember_me: bool, username: str, password: str):
+    def login(self, remember_me: bool, email: str, password: str):
         
-        # login_json = {"remember_me": remember_me, "username": username, "password": password}
-        login_json = {"username": username, "password": password}
+        # login_json = {"remember_me": remember_me, "email": email, "password": password}
+        login_json = {"email": email, "password": password}
         # connect to server and get login response
         try:
             login_status = connect(endpoint="/api/v1/login", data=login_json)
@@ -59,7 +59,7 @@ class LoginScreen(MDScreen):
                 self.manager.push_replacement("home")
             elif login_status["status"] == False:
                 # make a popup and request creds again
-                notification.notify(title="eNtweniBooking", message="username or password Incorrect", ticker="ticker")
+                notification.notify(title="eNtweniBooking", message="email or password Incorrect", ticker="ticker")
         except Exception as e:
             notification.notify(title="eNtweniBooking", message="Check your connection...", toast=True)
         

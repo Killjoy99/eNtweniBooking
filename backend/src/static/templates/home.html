@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block head %}
+    <title>eNtweni Booking - Home</title>
+{% endblock %}
+
+{% block content %}
+    <h1>
+        Welcome
+    </h1>
+    <h2>
+        logged in as {{ data.user }}
+    </h2>
+    <h2>
+        Your roles are:
+        {% for role in data.roles %}
+            <h3>
+                role
+            </h3>
+        {% endfor %}
+    </h2>
+    
+{% endblock %}

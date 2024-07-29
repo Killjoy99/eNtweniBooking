@@ -26,7 +26,7 @@
                 padding: 0,0,0,dp(60)
 
                 MDTextField:
-                    id: username
+                    id: email
                     pos_hint: {'center_x': 0.5, "top": 1}
                     allow_copy: True
                     on_text_validate: password.focus = True
@@ -35,7 +35,7 @@
                         icon: "account"
 
                     MDTextFieldHintText:
-                        text: "Username"
+                        text: "Email"
             
                 MDTextField:
                     id: password
@@ -70,7 +70,7 @@
 
         MDButton:
             id: login
-            on_release: root.login(root.do_remember_me, username.text, password.text)
+            on_release: root.login(root.do_remember_me, email.text, password.text)
             pos_hint: {'center_x': 0.5}
             radius: dp(2)
             style: "filled"
