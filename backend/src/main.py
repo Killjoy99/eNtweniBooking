@@ -1,5 +1,6 @@
 from os import path
 from typing import Optional, List
+from sqladmin import Admin
 
 from fastapi import FastAPI, status, Depends
 from fastapi_offline import FastAPIOffline          #NOTE:  Change to FastAPI on runtime
@@ -10,7 +11,9 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.routing import compile_path
 
 from src.core.config import settings
+from src.database.core import async_engine
 from src.core.decorators import render_template, check_accept_header
+from src.admin.admin import UserAdmin, OrganisationAdmin, ProductAdmin
 
 from .api import api_router
 
@@ -31,6 +34,11 @@ api = FastAPIOffline(
     openapi_url="/docs/openapi.json",
     redoc_url="/docs",
 )
+
+admin = Admin(api, async_engine)
+admin.add_view(UserAdmin)
+admin.add_view(OrganisationAdmin)
+admin.add_view(ProductAdmin)
 
 @frontend.get("/")
 async def index(request: Request):
