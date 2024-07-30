@@ -11,7 +11,7 @@ from .models import Booking
 from .schemas import BookingCreate, BookingRead
 
 
-booking_router = APIRouter()
+booking_router = APIRouter(prefix="/bookings", tags=["Bookings"])
 
 
 @booking_router.get("")

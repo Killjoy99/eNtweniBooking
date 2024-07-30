@@ -12,7 +12,7 @@ from .models import Product
 from .schemas import ProductCreate, ProductRead
 
 
-product_router = APIRouter()
+product_router = APIRouter(prefix="/products", tags=["Products"])
 
 
 @product_router.get("", name="read_products")

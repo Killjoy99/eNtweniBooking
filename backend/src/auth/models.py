@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 from pydantic import validator, Field
 from pydantic.networks import EmailStr
 
-from sqlalchemy import ForeignKey, func, String, Boolean, Index
+from sqlalchemy import ForeignKey, func, String, Boolean, Index, DateTime
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 
@@ -31,6 +31,7 @@ class User(Base):
     last_name: Mapped[str] = mapped_column(String(150), default="")
     is_superuser: Mapped[bool] = mapped_column(Boolean, default=False)
     user_image: Mapped[str] = mapped_column(String(1048), nullable=True)
+    last_login: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True)
     is_deleted: Mapped[bool] = mapped_column(Boolean, default=False)        #redefine column for indexing
     experimental_features: Mapped[bool] = mapped_column(Boolean, default=False)
 

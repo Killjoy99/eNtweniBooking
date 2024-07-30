@@ -11,32 +11,41 @@
 <div class="dropdown position-fixed bottom-0 end-0 mb-3 me-3 bd-mode-toggle">
 </div>
 <main class="form-signin w-100 m-auto">
-  {{ data.error }}
-  <form action="{{ url_for('signup' ) }}" method="post">
-    <img class="mb-4" src="{{ url_for('static', path='/images/entweni-booking.png') }}" alt="eNtweniBooking Logo" width="150" height="150">
-    <h1 class="h3 mb-3 fw-normal">Create an account</h1>
+	{{ data.error }}
+	<form action="{{ url_for('register' ) }}" method="post">
+		<img class="mb-4" src="{{ url_for('static', path='/images/entweni-booking.png') }}" alt="eNtweniBooking Logo" width="150" height="150">
+		<h1 class="h3 mb-3 fw-normal">Create an account</h1>
 
-    <div class="form-floating">
-      <input type="text" class="form-control" id="username" name="username" placeholder="Username">
-      <label for="username">Username</label>
-    </div>
-    <div class="form-floating">
-        <input type="text" class="form-control" id="username" name="username" placeholder="Username">
-        <label for="username">Email</label>
-    </div>
-    <div class="form-floating">
-        <input type="password" class="form-control" id="password" name="password" placeholder="Password">
-        <label for="password">Password</label>
-    </div>
-    <div class="form-floating">
-        <input type="password" class="form-control" id="password" name="password" placeholder="Password">
-        <label for="password">Password</label>
-    </div>
+		<div class="form-floating">
+			<input type="text" class="form-control" id="username" name="username" placeholder="Username" required>
+			<label for="username">Username</label>
+		</div>
+		<div class="form-floating">
+			<input type="text" class="form-control" id="email" name="email" placeholder="Email" required>
+			<label for="email">Email</label>
+		</div>
+		<div class="form-floating">
+			<input type="text" class="form-control" id="first_name" name="first_name" placeholder="Firstname" required>
+			<label for="first_name">Firstname</label>
+		</div>
+		<div class="form-floating">
+			<input type="text" class="form-control" id="last_name" name="last_name" placeholder="Lastname" required>
+			<label for="last_name">Lastname</label>
+		</div>
+		<div class="form-floating">
+			<input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
+			<label for="password">Password</label>
+		</div>
+		<div class="form-floating">
+			<input type="password" class="form-control" id="password2" name="password2" placeholder="Password" required>
+			<label for="password2">Password</label>
+		</div>
 
-    <button class="btn btn-primary w-100 py-2" type="submit">Register</button>
-    <a href="{{ url_for('login' ) }}">Already have an account?</a>
-    <p class="mt-5 mb-3 text-body-secondary">&copy;eNtweniBooking 2017–2024</p>
-  </form>
+		<button class="btn btn-primary w-100 py-2" type="submit">Register</button>
+		<a href="{{ url_for('sign_in' ) }}" style="float: right;">Already have an account?</a>
+		<a href="{{ url_for('google_login' ) }}" class="btn btn-secondary w-100 py-2" type="submit">Sign in with Google</a>
+		<p class="mt-5 mb-3 text-body-secondary">&copy;eNtweniBooking 2017–2024</p>
+	</form>
 </main>
 
 {% endblock %}

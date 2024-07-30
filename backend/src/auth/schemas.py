@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from pydantic.networks import EmailStr
+from pydantic import EmailStr, Field, field_validator, BaseModel
 from typing import Optional, List
 
 
@@ -11,7 +11,7 @@ class UserCreateSchema(BaseModel):
     
 
 class UserLoginSchema(BaseModel):
-    email: Optional[EmailStr]
+    login_identifier: str
     password: str
     
     
@@ -24,6 +24,10 @@ class UserUpdateSchema(BaseModel):
 class UserReadSchema(BaseModel):
     username: str
     email: EmailStr
+
+
+class GoogleLoginSchema(BaseModel):
+    access_token: str
     
 
 class UserLoginResponseSchema(BaseModel):
@@ -44,7 +48,3 @@ class UserLoginResponseSchema(BaseModel):
             if "/static/" in image_url and settings.ENVIRONMENT == "development":
                 return settings.STATIC_HOST + image_url
         return image_url
-    
-
-class GoogleLoginSchema(BaseModel):
-    access_token: str

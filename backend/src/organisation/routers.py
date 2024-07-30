@@ -12,7 +12,7 @@ from .schemas import OrganisationCreateSchema, OrganisationReadSchema, Organisat
 from .services import get_all, get_by_id, deactivate, create
 
 
-organisation_router = APIRouter()
+organisation_router = APIRouter(prefix="/organisations", tags=["Organisation"])
 
 
 @organisation_router.get("")
