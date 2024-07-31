@@ -203,6 +203,73 @@ python run.py
 ## `PRODUCTION`
 On production we will be using Nginx Unit
 
+## `Configure Nginx Unit`
+
+1. Create a new service for Nginx Unit
+```sh
+sudo nano /etc/systemd/system/unit.service
+```
+
+2. Add the following content to the service file
+```ini
+[Unit]
+Description=Nginx Unit
+After=network.target
+
+[Service]
+ExecStart=/usr/sbin/unitd --no-daemon
+ExecReload=/bin/kill -HUP $MAINPID
+ExecStop=/bin/kill -QUIT $MAINPID
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+```
+Make sure that the ExecStart path matches the location of the unitd executable on your system. If it's different, adjust accordingly.
+```sh
+which unitd
+```
+
+3. Reload systemd to apply the new service file
+```sh
+sudo systemctl enable unit.service
+```
+
+4. Start the Nginx Unit service immediately
+```sh
+sudo systemctl start unit.service
+```
+
+4. Check the status of the service to ensure it's running
+```sh
+sudo systemctl status unit.service
+```
+
+5. Reload and restart the service if failed
+```sh
+sudo systemctl daemon-reload
+sudo systemctl restart unit.service
+```
+
+6. Check for Required Directories and Permissions
+
+Ensure that the directories and files required by Nginx Unit have the correct permissions. You might need to adjust the permissions of your application directory to be accessible by the unit user:
+```sh
+sudo chown -R unit:unit /path/to/your/app
+```
+
+7. Check the Configuration
+
+Ensure that your Nginx Unit configuration is correct. Invalid configurations can cause the service to fail. You can test your configuration file before applying it:
+```sh
+sudo unitd --check
+```
+
+
+`Additional Notes`
+If you need to make any changes to the service file, always reload the systemd configuration using sudo systemctl daemon-reload after making changes.
+Use sudo systemctl restart unit.service to restart the service if needed.
+
 1. Json Configuaration
 
 ```json
