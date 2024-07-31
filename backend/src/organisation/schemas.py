@@ -1,40 +1,43 @@
-from pydantic import Field
+from pydantic import Field, BaseModel
 from pydantic.color import Color
 from typing import Optional, List
 
-from src.core.schemas import CustomBaseModel #, NameStr, OrganisationSlug, PrimaryKey, Pagination
 
 
-class OrganisationBase(CustomBaseModel):
+
+class OrganisationBase(BaseModel):
     id: int
     name: str
-    description: Optional[str] = Field(None, nullable=True)
-    default: Optional[bool] = Field(False, nullable=True)
-    slug: Optional[str] = Field(nullable=True)
+    description: Optional[str] = Field(None)
+    default: Optional[bool] = Field(False)
+    slug: Optional[str] = Field()
     
 
-class OrganisationCreateSchema(CustomBaseModel):
+class OrganisationCreateSchema(BaseModel):
     name: str
-    description: Optional[str] = Field(None, nullable=True)
-    default: Optional[bool] = Field(False, nullable=True)
-    slug: Optional[str] = Field(nullable=True)
+    description: Optional[str] = Field(None)
+    default: Optional[bool] = Field(False)
+    slug: Optional[str] = Field()
 
 
-class OrganisationUpdateSchema(CustomBaseModel):
-    description: Optional[str] = Field(None, nullable=True)
-    default: Optional[bool] = Field(False, nullable=True)
+class OrganisationUpdateSchema(BaseModel):
+    description: Optional[str] = Field(None)
+    default: Optional[bool] = Field(False)
 
 
 class OrganisationReadSchema(OrganisationBase):
-    id: Optional[int]
-    slug: Optional[str]
+    id: int
+    slug: str
     
     
-class OrganisationDeactivateSchema(CustomBaseModel):
+class OrganisationDeactivateSchema(BaseModel):
     name: str
     slug: str
     active: bool
 
+
+class OrganisationResponseSchema(BaseModel):
+    organisations: List[OrganisationBase]
 
 # class OrganisationPagination(Pagination):
 #     items: List[OrganisationRead] = []

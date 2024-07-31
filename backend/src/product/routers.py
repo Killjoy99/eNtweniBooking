@@ -17,7 +17,7 @@ product_router = APIRouter(prefix="/products", tags=["Products"])
 
 @product_router.get("", name="read_products")
 @render_template(template_name="product/list.html")
-async def get_products(request: Request, is_template: Optional[bool]=Depends(check_accept_header), db: async_sessionmaker[AsyncSession] = Depends(get_async_db)):
+async def get_products(request: Request, is_template: Optional[bool]=Depends(check_accept_header), db: AsyncSession = Depends(get_async_db)):
     """Get all products."""
     statement = await db.execute(select(Product))
     products = statement.scalars().all()

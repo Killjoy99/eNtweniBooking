@@ -1,14 +1,12 @@
-from pydantic import Field
+from pydantic import Field, BaseModel
 from typing import Optional, List
 
-from src.core.schemas import CustomBaseModel
 
-
-class BookingBase(CustomBaseModel):
+class BookingBase(BaseModel):
     id: int
     name: str
-    description: Optional[str] = Field(None, nullable=True)
-    default: Optional[bool] = Field(False, nullable=True)
+    description: Optional[str] = Field(None)
+    default: Optional[bool] = Field(False)
     unit_of_measure: Optional[str]
     slug: Optional[str]
     # organisation_id: Optional[int]

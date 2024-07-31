@@ -59,7 +59,7 @@ def check_accept_header(request: Request) -> bool:
     return False
 
 
-def return_json(data: any):
+def return_json(data: Any):
     return JSONResponse(content=data)
 
 

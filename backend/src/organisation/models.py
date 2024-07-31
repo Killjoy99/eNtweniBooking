@@ -29,13 +29,13 @@ class Organisation(Base):
     # bookings: Mapped[List[Booking]] = relationship()
     
     # Indexes
-    # __table_args__ = (
-    #     Index("idx_organisation_on_name_description", "name", "description", postgresql_concurrently=True),
-    #     Index(
-    #         "idx_organisation_on_name_description",
-    #         "name",
-    #         "description",
-    #         postgresql_concurrently=True,
-    #         postgresql_where=(active.is_(True))
-    #     ),
-    # )
+    __table_args__ = (
+        Index("idx_organisation_on_name_description", "name", "description", postgresql_concurrently=True),
+        Index(
+            "idx_organisation_on_name_description",
+            "name",
+            "description",
+            postgresql_concurrently=True,
+            postgresql_where=(active.is_(True))
+        ),
+    )

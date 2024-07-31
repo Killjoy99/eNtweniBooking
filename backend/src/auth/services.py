@@ -1,13 +1,16 @@
 import asyncio
 import logging
-from fastapi import status
+import jwt
+
+from fastapi import status, Cookie, Depends, HTTPException
 from httpx import AsyncClient, Response
 from datetime import datetime, timedelta
-from typing import Any, Optional
+from typing import Any, Optional, Annotated
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, or_, and_, func
 
 from src.core.config import settings
+from src.database.core import get_async_db
 
 from .models import User
 from .utils import get_hashed_password, verify_password, generate_secure_password
@@ -117,3 +120,43 @@ async def update_user_last_login(db_session: AsyncSession, *, user: User) -> Non
     user.last_login = func.now()
     await db_session.commit()
     logger.debug(f"Updated last login time for user {user.id}")
+
+
+async def get_current_user(access_token: Annotated[str, Cookie()],db_session: AsyncSession = Depends(get_async_db)) -> User:
+    try:
+        payload = jwt.decode(access_token, settings.JWT_ACCESS_SECRET_KEY, algorithms=[settings.ENCRYPTION_ALGORITHM])
+        login_identifier: str = payload.get("sub")
+        if not login_identifier:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Could not validate credentials",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token expired")
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid Access Token")
+    except jwt.PyJWTError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    user: User | None = await get_user_by_login_identifier(db_session, login_identifier=login_identifier)
+
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    if user.is_deleted:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User is not active",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    return user

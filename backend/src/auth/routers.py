@@ -1,12 +1,13 @@
 import logging
 import jwt
 from datetime import datetime, timedelta
-from typing import Optional, Annotated
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status, Request, Response, Form, Cookie, Body
+from typing import Optional, Union, Annotated
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status, Request, Response, Cookie, Body
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.responses import RedirectResponse, JSONResponse
 from fastapi_limiter.depends import RateLimiter
 from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
+from httpx import AsyncClient
 
 from src.database.core import get_async_db
 from src.core.config import settings
@@ -20,19 +21,23 @@ from .services import (
     get_user_by_login_identifier,
     update_user_last_login,
     verify_google_token,
+    get_current_user,
 )
-from .utils import create_access_token, create_refresh_token, get_current_user
-from httpx import AsyncClient
+from .utils import create_access_token, create_refresh_token
 
 logger = logging.getLogger(__name__)
 
 auth_router = APIRouter(tags=["Authentication"])
 
+def set_cookies(response: Response, access_token: str, refresh_token: str):
+    response.set_cookie(key="access_token", value=access_token, httponly=True, samesite="none", secure=True)
+    response.set_cookie(key="refresh_token", value=refresh_token, httponly=True, samesite="none", secure=True)
+
 @auth_router.get("/me", name="me")
 @render_template(template_name="me.html")
 async def get_me(
     request: Request,
-    db_session: async_sessionmaker[AsyncSession] = Depends(get_async_db),
+    db_session: AsyncSession = Depends(get_async_db),
     is_template: Optional[bool] = Depends(check_accept_header)
 ):
     if is_template:
@@ -41,7 +46,7 @@ async def get_me(
 
 @auth_router.get("/login", summary="Login template frontend", name="sign_in")
 @render_template(template_name="auth/login.html")
-async def login(
+async def login_page(
     request: Request,
     is_template: Optional[bool] = Depends(check_accept_header)
 ):
@@ -61,7 +66,7 @@ async def google_login():
 @auth_router.get("/callback", summary="Handle Google OAuth2 callback", name="callback")
 async def callback(
     request: Request,
-    db_session: async_sessionmaker[AsyncSession] = Depends(get_async_db)
+    db_session: AsyncSession = Depends(get_async_db)
 ):
     code = request.query_params.get("code")
     if not code:
@@ -101,8 +106,7 @@ async def callback(
             refresh_token = await create_refresh_token(email)
 
             response = RedirectResponse(url="/")
-            response.set_cookie(key="access_token", value=access_token, httponly=True, samesite="none", secure=True)
-            response.set_cookie(key="refresh_token", value=refresh_token, httponly=True, samesite="none", secure=True)
+            set_cookies(response, access_token, refresh_token)
             return response
 
     except Exception as e:
@@ -110,56 +114,52 @@ async def callback(
         raise HTTPException(status_code=500, detail="Internal server error")
 
 @auth_router.post("/login/", summary="Create access and refresh tokens for user", name="login")
-# @render_template(template_name="login.html")
 async def login(
     request: Request,
     response: Response,
     background_tasks: BackgroundTasks,
     is_template: Optional[bool] = Depends(check_accept_header),
-    db_session: async_sessionmaker[AsyncSession] = Depends(get_async_db),
-    form_data: OAuth2PasswordRequestForm = Depends(None),
+    db_session: AsyncSession = Depends(get_async_db),
+    form_data: Optional[OAuth2PasswordRequestForm] = Depends(None),
     json_data: Optional[UserLoginSchema] = Body(None)
 ):
-    # Determine if we have form data or JSON data
-    login_identifier = None
-    password = None
-    
+    login_identifier, password = None, None
+
     if form_data:
         login_identifier = form_data.username.lower()
         password = form_data.password
     elif json_data:
-        login_identifier = json_data.username.lower()
+        login_identifier = json_data.login_identifier.lower()
         password = json_data.password
     else:
         raise HTTPException(status_code=400, detail="No login credentials provided")
 
     try:
-        user: User | None = await authenticate_user(db_session=db_session, login_identifier=login_identifier, password=password)
-        
+        user: Optional[User] = await authenticate_user(db_session=db_session, login_identifier=login_identifier, password=password)
+
         if not user:
+            error_message = "Incorrect email/user or password"
             if is_template:
-                return {"data": {}, "error_message": "Incorrect email/user or password"}
-            return JSONResponse(status_code=400, content={"error": "Incorrect email/user or password"})
-        
+                return {"data": {}, "error_message": error_message}
+            return JSONResponse(status_code=400, content={"error": error_message})
+
         access_token = await create_access_token(login_identifier, user_data={"user_id": user.id, "username": user.username, "email": user.email, "image": user.user_image})
         refresh_token = await create_refresh_token(login_identifier, user_data={"user_id": user.id, "username": user.username, "email": user.email, "image": user.user_image})
-            
-        response.set_cookie(key="access_token", value=access_token, httponly=True, samesite="none", secure=True)
-        response.set_cookie(key="refresh_token", value=refresh_token, httponly=True, samesite="none", secure=True)
-            
+
+        set_cookies(response, access_token, refresh_token)
+
         background_tasks.add_task(update_user_last_login, db_session, user=user)
-        return RedirectResponse(url="/api/v1/home", status_code=status.HTTP_302_FOUND, )
-    
+        return RedirectResponse(url="/api/v1/home", status_code=status.HTTP_302_FOUND)
+
     except Exception as e:
         logger.error(f"Error during login: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
-
 
 @auth_router.post("/refresh/", summary="Create a new access token for the user", name="refresh")
 async def get_new_access_token_from_refresh_token(
     refresh_token: Annotated[str, Cookie()],
     response: Response,
-    db_session: async_sessionmaker[AsyncSession] = Depends(get_async_db),
+    db_session: AsyncSession = Depends(get_async_db),
 ):
     try:
         payload = jwt.decode(refresh_token, settings.JWT_REFRESH_SECRET_KEY, algorithms=[settings.ENCRYPTION_ALGORITHM])
@@ -168,12 +168,10 @@ async def get_new_access_token_from_refresh_token(
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Could not validate credentials")
 
         user = await get_user_by_login_identifier(db_session, login_identifier=login_identifier)
-        if not user:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Could not validate credentials")
-        if user.is_deleted:
+        if not user or user.is_deleted:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User is not active")
 
-        new_access_token = create_access_token(
+        new_access_token = await create_access_token(
             login_identifier, expires_delta=timedelta(minutes=settings.NEW_ACCESS_TOKEN_EXPIRE_MINUTES)
         )
 

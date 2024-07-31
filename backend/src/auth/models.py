@@ -14,8 +14,6 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 
 from src.core.enums import UserRoles
-from src.core.models import TimeStampMixin
-from src.core.schemas import OrganisationSlug, Pagination, PrimaryKey, CustomBaseModel
 
 from src.database.core import Base
 

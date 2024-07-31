@@ -307,6 +307,7 @@ sudo chown unit:unit .
 3. Push the config to the server
 
 ```sh
+curl -X PUT --data-binary @server-config.json --unix-socket /var/run/control.unit.sock http://localhost/config
 sudo curl -X PUT --data-binary @server-config.json --unix-socket /var/run/control.unit.sock http://localhost/config
 ```
 

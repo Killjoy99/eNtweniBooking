@@ -1,14 +1,12 @@
-from pydantic import Field
+from pydantic import Field, BaseModel
 from typing import Optional, List
 
-from src.core.schemas import CustomBaseModel
 
-
-class ProductBase(CustomBaseModel):
+class ProductBase(BaseModel):
     id: int
     name: str
-    description: Optional[str] = Field(None, nullable=True)
-    default: Optional[bool] = Field(False, nullable=True)
+    description: Optional[str] = Field(None)
+    default: Optional[bool] = Field(False)
     price: Optional[float]
     unit_of_measure: Optional[str]
     slug: Optional[str]
@@ -20,11 +18,11 @@ class ProductCreate(ProductBase):
 
 
 # class ProductUpdate(CustomBaseModel):
-#     description: Optional[str] = Field(None, nullable=True)
-#     default: Optional[bool] = Field(False, nullable=True)
-#     # banner_enabled: Optional[bool] = Field(False, nullable=True)
-#     # banner_color: Optional[str] = Field(None, nullable=True)
-#     # banner_text: Optional[NameStr] = Field(None, nullable=True)
+#     description: Optional[str] = Field(None)
+#     default: Optional[bool] = Field(False)
+#     # banner_enabled: Optional[bool] = Field(False)
+#     # banner_color: Optional[str] = Field(None)
+#     # banner_text: Optional[NameStr] = Field(None)
 
 
 class ProductRead(ProductBase):

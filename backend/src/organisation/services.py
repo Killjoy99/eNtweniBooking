@@ -1,10 +1,12 @@
+import logging
+
 from typing import List, Optional
 from sqlalchemy.sql.expression import true
 from sqlalchemy import select, or_, and_, func
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.exc import SQLAlchemyError
 
-
-from src.core.enums import UserRoles
+from fastapi import HTTPException
 
 from .models import Organisation
 
@@ -14,187 +16,136 @@ from .schemas import (
     OrganisationUpdateSchema,
 )
 
+logger = logging.getLogger(__name__)
+
 
 async def get_default(*, db_session: AsyncSession) -> Organisation | None:
     """Gets the default organisation"""
     query = select(Organisation).where(Organisation.default.is_(True))
     result = await db_session.execute(query)
     
-    default_organisation: Organisation = result.scalar_one_or_none()
+    default_organisation: Organisation | None = result.scalar_one_or_none()
     
     return default_organisation
 
+async def filter_active_and_not_deleted(query):
+    return query.where(and_(Organisation.active.is_(True), Organisation.is_deleted.is_(False)))
 
-async def get_default_or_raise(*, db_session: AsyncSession) -> Organisation | str:
-    """Returns the default organisation or raises an error if none exist"""
-    default_organisation: Organisation = await get_default(db_session=db_session)
-    
-    if not default_organisation:
-        raise ValidationError(
-            [
-                ErrorWrapper(
-                    NotFoundError(msg="No default Organisation defined."), loc="organisation"
-                )
-            ],
-            model=OrganisationRead,
-        )
+
+
+async def get_default_or_raise(*, db_session: AsyncSession) -> Organisation:
+    """Returns the default organisation or raises an HTTPException if none exist"""
+    default_organisation = await get_default(db_session=db_session)
+    if default_organisation is None:
+        raise HTTPException(status_code=404, detail="Default organisation not found")
     return default_organisation
 
 
-async def get_by_id(*, db_session: AsyncSession, id: int) -> Organisation | None:
-    """ Gets an Organisation given its ID"""
-    query = select(Organisation).where(and_(Organisation.id == id, Organisation.active.is_(True)))
+
+async def get_by_id_filtered(*, db_session: AsyncSession, id: int, active: Optional[bool] = None) -> Organisation | None:
+    """Gets an Organisation by its ID with optional active status filter"""
+    query = select(Organisation).where(Organisation.id == id)
+    if active is not None:
+        query = query.where(Organisation.active.is_(active))
     result = await db_session.execute(query)
-    organisation: Organisation = result.scalar_one_or_none()
-    
-    return organisation
+    return result.scalar_one_or_none()
 
 
-async def get_by_name(*, db_session: AsyncSession, name: str):
-    """Gets an organisation by its name."""
-    query = select(Organisation).where(Organisation.name == name)
+async def get_by_attribute(*, db_session: AsyncSession, attribute_name: str, attribute_value: str) -> Organisation | None:
+    """Gets an organisation by a given attribute."""
+    query = select(Organisation).where(getattr(Organisation, attribute_name) == attribute_value)
     result = await db_session.execute(query)
-    
-    organisation: Organisation = result.scalar_one_or_none()
-    
+    return result.scalar_one_or_none()
+
+
+
+async def get_by_name_or_raise(*, db_session: AsyncSession, organisation_in: OrganisationReadSchema) -> Organisation:
+    """ Returns the specified organisation or raises HTTPException"""
+    organisation = await get_by_attribute(db_session=db_session, attribute_name="name", attribute_value=organisation_in.name)
+    if organisation is None:
+        raise HTTPException(status_code=404, detail=f"Organisation with name '{organisation_in.name}' not found")
     return organisation
 
 
-async def get_by_name_or_raise(*, db_session: AsyncSession, organisation_in=OrganisationReadSchema) -> Organisation:
-    """ Returns the specified organisation or raises ValidationError"""
-    organisation = await get_by_name(db_session=db_session, name=organisation_in.name)
-    
-    if not organisation:
-        raise ValidationError(
-            [
-                ErrorWrapper(
-                    NotFoundError(msg="Organisation not found.", organisation=organisation_in.name), loc="organisation"
-                )
-            ],
-            model=OrganisationReadSchema,
-        )
+async def get_by_slug_or_raise(*, db_session: AsyncSession, organisation_in: OrganisationReadSchema) -> Organisation:
+    """ Returns the organisation specified or raises HTTPException"""
+    organisation = await get_by_attribute(db_session=db_session, attribute_name="slug", attribute_value=organisation_in.slug)
+    if organisation is None:
+        raise HTTPException(status_code=404, detail=f"Organisation with slug '{organisation_in.slug}' not found")
     return organisation
 
 
-async def get_by_slug(*, db_session: AsyncSession, slug: str) -> Optional[Organisation]:
-    """Gets an organisation by its slug."""
-    query = select(Organisation).where(Organisation.slug == slug)
-    result = await db_session.execute(query)
+async def get_or_default(*, db_session: AsyncSession, name: Optional[str] = None) -> Organisation:
+    """Returns an organisation by name or default if not specified."""
+    if name:
+        organisation = await get_by_attribute(db_session=db_session, attribute_name='name', attribute_value=name)
+        if organisation is not None:
+            return organisation
     
-    organisation: Organisation = result.scalar_one_or_none()
-    return organisation
-
-
-async def get_by_slug_or_raise(*, db_session: AsyncSession, organisation_in=OrganisationReadSchema) -> Organisation:
-    """ Returns the organisation specified or raises ValidationError"""
-    organisation = await get_by_slug(db_session=db_session, slug=organisation_in.slug)
-    
-    if not organisation:
-        raise ValidationError(
-            [
-                ErrorWrapper(
-                    NotFoundError(msg="Organisation not found", organisation=organisation_in.name), loc="organisation"
-                )
-            ],
-            model=OrganisationRead,
-        )
-    return organisation
-
-
-async def get_by_name_or_default(*, db_session: AsyncSession, organisation_in=OrganisationReadSchema) -> Organisation:
-    """ Returns an organisation based on a name or default if not specified."""
-    if organisation_in.name:
-        return await get_by_name_or_raise(db_session=db_session, organisation_in=organisation_in)
-    else:
-        return await get_default_or_raise(db_session=db_session)
+    return await get_default_or_raise(db_session=db_session)
     
 
 async def get_all(*, db_session: AsyncSession) -> List[Organisation] | None:
-    """ Gets all organisations"""
-    query = select(Organisation).where(and_(Organisation.active == True, Organisation.is_deleted == False))
+    """Gets all organisations"""
+    query = select(Organisation)
+    organisations: List[Organisation]  = await filter_active_and_not_deleted(query)
     result = await db_session.execute(query)
-    
-    organisations: List[Organisation] = result.scalars().all()
-    
-    return organisations
+    return result.scalars().all()
 
 
-async def get_or_create(*, db_session: AsyncSession, organisation_in=OrganisationCreateSchema) -> Organisation:
-    """ Gets an existing or creates a new organisation."""
-    if organisation_in.id:
-        q = db_session.query(Organisation).filter(Organisation.id == organisation_in.id)
-    else:
-        q = db_session.query(Organisation).filter_by(**organisation_in.dict(exclude={"id"}))
-        
-    instance = q.first()
-    if instance:
-        return instance
+async def get_or_create(*, db_session: AsyncSession, organisation_in: OrganisationCreateSchema) -> Organisation:
+    """Gets an existing organisation or creates a new one."""
+    organisation = await get_by_attribute(db_session=db_session, attribute_name='name', attribute_value=organisation_in.name)
+    if organisation is None:
+        try:
+            organisation = Organisation(**organisation_in.dict())
+            db_session.add(organisation)
+            await db_session.commit()
+            await db_session.refresh(organisation)
+        except SQLAlchemyError as e:
+            logger.error(f"Error creating organisation: {e}")
+            await db_session.rollback()
+            raise HTTPException(status_code=500, detail="Failed to create organisation")
     
-    return create(db_session=db_session, organisation_in=organisation_in)
+    return organisation
 
 
-async def create(*, db_session: AsyncSession, organisation_in=OrganisationCreateSchema) -> Organisation:
-    """ Creates an organisation"""
-    organisation = Organisation(**organisation_in.dict())
+async def update_organisation(*, db_session: AsyncSession, organisation_id: int, organisation_in: OrganisationUpdateSchema) -> Organisation:
+    """Updates an organisation."""
+    organisation = await get_by_id_filtered(db_session=db_session, id=organisation_id, active=True)
+    if organisation is None:
+        raise HTTPException(status_code=404, detail="Organisation not found")
+
+    for field, value in organisation_in.model_dump(exclude_unset=True).items():
+        setattr(organisation, field, value)
     
-    
-    # let the new schema session create the Organisation
-    organisation = await db_session.add(organisation)
+    db_session.add(organisation)
     await db_session.commit()
     await db_session.refresh(organisation)
     
     return organisation
 
 
-async def update(*, db_session: AsyncSession, organisation=Organisation, organisation_in=OrganisationUpdateSchema) -> Organisation:
-    """Updates an organisation."""
-    organisation_data = organisation.dict()
-    update_data = organisation_in.dict(exclude_defaults=True, exclude={"banner_color"})
-    
-    for field in organisation_data:
-        if field in update_data:
-            setattr(organisation, field, update_data[field])
-            
-    if organisation_in.banner_color:
-        organisation.banner_color = organisation_in.banner_color.as_hex()
-        
-    db_session.commit()
-    return organisation
+async def set_organisation_status(*, db_session: AsyncSession, organisation_id: int, active: bool) -> Organisation | None:
+    """Sets the active status of an organisation."""
+    organisation = await get_by_id_filtered(db_session=db_session, id=organisation_id)
+    if organisation is None:
+        raise HTTPException(status_code=404, detail="Organisation not found")
 
-
-async def deactivate(*, db_session: AsyncSession, organisation_id: int) -> Organisation | None:
-    """ Deactivates an organisation or raises validation error"""
-    organisation = await get_by_id(db_session=db_session, id=organisation_id)
-    update_data = organisation.dict(exclude_defaults=True)
-    
-    if not organisation:
-        raise ValidationError(
-            [
-                ErrorWrapper(
-                    NotFoundError(msg="Organisation not found.", organisation=organisation_in.name), loc="organisation"
-                )
-            ],
-            model=OrganisationReadSchema,
-        )
-        
-    organisation.active = False
+    organisation.active = active
+    db_session.add(organisation)
     await db_session.commit()
+    await db_session.refresh(organisation)
     
     return organisation
 
 
-async def delete(*, db_session: AsyncSession, organisation_id: int):
-    """Deletes an organisation"""
-    organisation = db_session.query(Organisation).filter(Organisation.id == organisation_id).first()
-    db_session.delete(organisation)
-    db_session.commit()
-    
+async def delete_organisation(*, db_session: AsyncSession, organisation_id: int):
+    """Deletes an organisation."""
+    organisation = await get_by_id_filtered(db_session=db_session, id=organisation_id)
+    if organisation is None or organisation.is_deleted:
+        raise HTTPException(status_code=404, detail="Organisation not found or already deleted")
 
-# async def add_user(*, db_session: AsyncSession, user: EntweniBookingUser, organisation: Organisation, role: UserRoles = UserRoles.member):
-#     """Adds a user to an organisation"""
-#     db_session.add(
-#         EntweniBookingUserOrganisation(
-#             entwenibooking_user_id=user.id, organisation_id=organisation.id, role=role
-#         )
-#     )
-#     db_session.commit()
+    organisation.is_deleted = True
+    db_session.add(organisation)
+    await db_session.commit()

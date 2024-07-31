@@ -63,6 +63,8 @@ class GlobalSettings(BaseSettings):
     GOOGLE_AUTH_URL: str = "https://accounts.google.com/o/oauth2/auth"
     GOOGLE_TOKEN_URL: str = "https://oauth2.googleapis.com/token"
     REDIRECT_URI: str = "http://localhost:8000/api/v1/auth/callback"
+    # openapi
+    OPENAPI_PROJECT_SECRET_KEY: str
     #################################### auth related ####################################
     
     #################################### admin ####################################

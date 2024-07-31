@@ -3,7 +3,7 @@ from enum import Enum
 
 class EntweniBookingEnum(Enum):
     def __str__(self) -> str:
-        return str.__str__(self)
+        return str.__str__(self.name)
     
     
 class Visibility(EntweniBookingEnum):

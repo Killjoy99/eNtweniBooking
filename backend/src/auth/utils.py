@@ -18,7 +18,7 @@ from .models import User, UserRoles
 password_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
-async def create_access_token(login_identifier: str | Any, expires_delta: int = None, user_data: dict = None) -> str:
+async def create_access_token(login_identifier: str | Any, expires_delta: int = None, user_data: dict = {}) -> str:
     if expires_delta is not None:
         expires_delta = datetime.utcnow() + expires_delta
     else:
@@ -43,7 +43,7 @@ async def decode_access_token(token: str) -> dict:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
 
 
-async def create_refresh_token(login_identifier: str | Any, expires_delta: int = None, user_data: dict = None) -> str:
+async def create_refresh_token(login_identifier: str | Any, expires_delta: int = None, user_data: dict = {}) -> str:
     if expires_delta is not None:
         expires_delta = datetime.utcnow() + expires_delta
     else:
@@ -82,43 +82,3 @@ async def generate_secure_password(length=20) -> str:
     password = "".join(secrets.choice(alphabet) for _ in range(length))
     
     return password
-
-
-async def get_current_user(access_token: Annotated[str | None, Cookie()],db_session: AsyncSession = Depends(get_async_db)) -> User:
-    try:
-        payload = jwt.decode(access_token, settings.JWT_ACCESS_SECRET_KEY, algorithms=[settings.ENCRYPTION_ALGORITHM])
-        login_identifier: str = payload.get("sub")
-        if not login_identifier:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Could not validate credentials",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
-    except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token expired")
-    except jwt.InvalidTokenError:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid Access Token")
-    except jwt.PyJWTError:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Could not validate credentials",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-
-    user: User | None = await get_user_by_login_identifier(db_session, login_identifier=login_identifier)
-
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Could not validate credentials",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-
-    if user.is_deleted:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="User is not active",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-
-    return user

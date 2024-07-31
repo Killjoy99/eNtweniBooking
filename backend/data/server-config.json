@@ -1,16 +1,18 @@
 {
     "listeners": {
-        "*:80": {
+        "*:81": {
             "pass": "applications/eNtweniBooking"
         }
     },
     "applications": {
         "eNtweniBooking": {
-            "type": "python3",
-            "path": "/app",
-            "home": "/media/serpent99/Code/Python/APIs/eNtweniBooking/backend",
-            "module": "api",
-            "callable": "app"
+            "type": "python",
+            "path": "/media/serpent99/Code/Python/APIs/eNtweniBooking/backend/src/",
+            "module": "main",
+            "callable": "app",
+            "environment": {
+                "PYTHONPATH": "/usr/bin/python"
+            }
         }
     }
     

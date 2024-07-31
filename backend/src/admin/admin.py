@@ -12,7 +12,7 @@ class UserAdmin(ModelView, model=User):
 
 
 class OrganisationAdmin(ModelView, model=Organisation):
-    column_list = [Organisation.id, Organisation.name, Organisation.description]
+    column_list = [Organisation.id, Organisation.name, Organisation.description, Organisation.active, Organisation.is_deleted]
     
     
 class ProductAdmin(ModelView, model=Product):

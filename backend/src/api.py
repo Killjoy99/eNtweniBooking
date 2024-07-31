@@ -5,7 +5,6 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
 
-from src.core.schemas import OrganisationSlug
 from src.database.core import get_async_db
 
 from src.auth.routers import auth_router

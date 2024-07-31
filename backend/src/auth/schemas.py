@@ -2,6 +2,8 @@ from pydantic import BaseModel
 from pydantic import EmailStr, Field, field_validator, BaseModel
 from typing import Optional, List
 
+from src.core.config import settings
+
 
 class GoogleLoginSchema(BaseModel):
     access_token: str
@@ -25,7 +27,7 @@ class UserLoginResponseSchema(BaseModel):
         from_attribute = True
         
     @classmethod
-    def add_image_host(cls, image_url: str | None) -> str:
+    def add_image_host(cls, image_url: str | None) -> str | None:
         if image_url:
             if "/static/" in image_url and settings.ENVIRONMENT == "development":
                 return settings.STATIC_HOST + image_url
