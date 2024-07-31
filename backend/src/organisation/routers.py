@@ -16,6 +16,7 @@ organisation_router = APIRouter(prefix="/organisations", tags=["Organisation"])
 
 
 @organisation_router.get("")
+@render_template(template_name="organisation/list.html")
 async def get_organisations(request: Request, is_template: Optional[bool]=Depends(check_accept_header), db_session: async_sessionmaker[AsyncSession] = Depends(get_async_db)):
     """Get all aorganisations."""
     organisations: OrganisationResponseSchema = await get_all(db_session=db_session)
@@ -23,7 +24,7 @@ async def get_organisations(request: Request, is_template: Optional[bool]=Depend
     data = {"organisations": organisations}
     
     if is_template:
-        return render_template(request=request, template_name="organisation/list.html", context=data)
+        return {"data": data, "error_message": None}
     
     return organisations
 
@@ -41,13 +42,14 @@ async def create_organisation(request: Request, organisation_in: OrganisationCre
 
 
 @organisation_router.get("/{organisation_id}", name="organisation")
+@render_template(template_name="organisation/detail.html")
 async def get_organisation(request: Request, organisation_id: int, is_template: Optional[bool]=Depends(check_accept_header), db_session: async_sessionmaker[AsyncSession]=Depends(get_async_db)):
     """ Get an organisation by id."""
     
     organisation: Organisation = await get_by_id(db_session=db_session, id=organisation_id)
     
     if is_template:
-        return render_template(request=request, template_name="organisation/detail.html", context={"organisation": organisation})
+        return {"organisation": organisation, "error_message": None}
     return organisation
 
 
@@ -57,13 +59,14 @@ async def update_organisation(request: Request, organisation_id: int, is_templat
 
 
 @organisation_router.post("/{organisation_id}", name="organisation_deactivate", response_model=OrganisationDeactivateSchema)
+@render_template(template_name="organisation/detail.html")
 async def deactivate_organisation(request: Request, organisation_id: int, is_template: Optional[bool]=Depends(check_accept_header), db_session: async_sessionmaker[AsyncSession]=Depends(get_async_db)):
     """ Deactivate an organisation based on its ID"""
     
     organisation: Organisation = await deactivate(db_session=db_session, organisation_id=organisation_id)
     
     if is_template:
-        return render_template(request=request, template_name="organisation/detail.html", context={"organisation": organisation})
+        return {"organisation": organisation, "error_message": None}
     return organisation
 
 

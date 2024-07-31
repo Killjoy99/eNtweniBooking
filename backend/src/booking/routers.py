@@ -15,6 +15,7 @@ booking_router = APIRouter(prefix="/bookings", tags=["Bookings"])
 
 
 @booking_router.get("")
+@render_template(template_name="product/list.html")
 async def list_bookings(request: Request, is_template: Optional[bool]=Depends(check_accept_header), db: async_sessionmaker[AsyncSession] = Depends(get_async_db)):
     """Get all bookings."""
     statement = await db.execute(select(Booking))
@@ -23,7 +24,7 @@ async def list_bookings(request: Request, is_template: Optional[bool]=Depends(ch
     # data = {}
     
     if is_template:
-        return render_template(request=request, template_name="product/list.html", context=data)
+        return {"data": data, "error_message": None}
     return bookings
 
 

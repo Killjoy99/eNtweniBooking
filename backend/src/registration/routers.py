@@ -15,10 +15,11 @@ account_router = APIRouter(tags=["Account"])
 
 
 @account_router.get("/register", summary="Endpoint for the frontend template", name="signup")
+@render_template(template_name="auth/signup.html")
 async def register(request: Request, is_template: Optional[bool]=Depends(check_accept_header), db_session: async_sessionmaker[AsyncSession]=Depends(get_async_db)):
     if is_template:
         data = {}
-        return render_template(request=request, template_name="auth/signup.html", context={"data": data})
+        return {"data": {}, "error_message": None}
     else:
         data = {}
         return return_json(data=data)

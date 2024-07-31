@@ -1,12 +1,12 @@
 import logging
 import os
 import asyncio
+from os import path
 from random import randint
 from urllib import parse
 
 import boto3
 from pydantic_settings import BaseSettings, SettingsConfigDict
-
 
 class GlobalSettings(BaseSettings):
     model_config = SettingsConfigDict(env_file="data/.env", env_file_encoding="utf-8")
@@ -45,6 +45,7 @@ class GlobalSettings(BaseSettings):
     STATIC_HOST: str = "http://localhost:8001"
     DEFAULT_STATIC_DIR: str = os.path.join(os.path.abspath(os.path.dirname(__file__)), os.path.join("../static"))
     STATIC_DIR: str = DEFAULT_STATIC_DIR
+    TEMPLATE_DIR: str = path.join(STATIC_DIR, "templates")
     #################################### static files ####################################
 
     
@@ -56,7 +57,8 @@ class GlobalSettings(BaseSettings):
     NEW_ACCESS_TOKEN_EXPIRE_MINUTES: int = 120
     REFRESH_TOKEN_EXPIRE_MINUTES: int = 60 * 24
     # Google Auth
-    GOOGLE_CLIENT_ID: str
+    GOOGLE_CLIENT_ID: str = os.getenv("GOOGLE_CLIENT_ID", "")
+    GOOGLE_CLIENT_SECRET: str = os.getenv("GOOGLE_CLIENT_SECRET", "")
     GOOGLE_USERINFO_URL: str = "https://www.googleapis.com/oauth2/v3/userinfo"
     GOOGLE_AUTH_URL: str = "https://accounts.google.com/o/oauth2/auth"
     GOOGLE_TOKEN_URL: str = "https://oauth2.googleapis.com/token"

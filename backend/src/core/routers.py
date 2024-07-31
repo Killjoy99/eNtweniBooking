@@ -12,7 +12,7 @@ home_router = APIRouter(tags=["Home"])
 
 
 @home_router.get("/home", name="home")
+@render_template(template_name="home.html")
 async def home(request: Request, response: Response, db_session: AsyncSession = Depends(get_async_db), is_template: Optional[bool] = Depends(check_accept_header)):
-    data = {}
     if is_template:
-        return render_template(request=request, template_name="home.html", context=data)
+        return {"data": {}, "error_message": None}

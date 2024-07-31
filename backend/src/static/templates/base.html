@@ -1,22 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        {% block head %}
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>eNtweni Booking - Welcome</title>
-            <link rel="stylesheet" href="{{ url_for('static', path='/css/bootstrap.min.css') }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="eNtweni Booking - Your booking solution">
+    <meta name="author" content="Your Name or Company">
+    <title>{% block title %}eNtweni Booking - Welcome{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}">
+</head>
+<body>
+    <header>
+        <!-- Optional: Add navigation or branding elements here -->
+        <img src="{{ url_for('static', path='images/entweni-booking.png') }}" alt="eNtweni Booking Logo" class="logo">
+    </header>
+    
+    <main>
+        {% block content %}
         {% endblock %}
-    </head>
-    <body>
-        {% block content%}
-        {% endblock %}
+    </main>
 
-        {% block styles %}
-        {% endblock %}
+    <!-- <footer> -->
+        <!-- Optional: Add footer content here -->
+        <!-- <p>&copy; 2024 eNtweni Booking. All rights reserved.</p> -->
+    <!-- </footer> -->
 
-        {% block scripts %}
-            <script src="{{ url_for('static', path='/js/bootstrap.min.js') }}"></script>
-        {% endblock %}
-    </body>
+    {% block scripts %}
+        <!-- Loading the scripts asynchronously -->
+        <script src="{{ url_for('static', path='js/bootstrap.min.js') }}" defer></script>
+    {% endblock %}
+</body>
 </html>

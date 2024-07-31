@@ -1,13 +1,47 @@
 from os import path
 
-from fastapi import Depends, Request, status
-from fastapi.responses import JSONResponse
+from functools import wraps
+from fastapi import Depends, Request, status, HTTPException
+from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
+from typing import Optional, Callable, Dict, Any
 
 from src.core.config import settings
 
 
-templates = Jinja2Templates(directory=path.join(settings.STATIC_DIR, "templates"))
+templates = Jinja2Templates(directory=settings.TEMPLATE_DIR)
+
+
+def render_template(template_name: str, context: Optional[Dict[str, Any]] = None, error_message: Optional[str] = None):
+    def decorator(func: Callable):
+        @wraps(func)
+        async def wrapper(request: Request, *args, **kwargs):
+            # Execute the view function to get context data
+            response_data = await func(request, *args, **kwargs)
+
+            # Ensure response_data is a dictionary
+            if not isinstance(response_data, dict):
+                raise HTTPException(status_code=500, detail="View function did not return a dictionary.")
+
+            ctx = context or {}
+            ctx.update(response_data)
+
+            # Include error message if provided
+            if error_message:
+                ctx["error_message"] = error_message
+
+            # Render the template asynchronously
+            try:
+                content = templates.TemplateResponse(template_name, {"request": request, **ctx}).body.decode()
+                return HTMLResponse(content=content, status_code=200)
+            except Exception as e:
+                raise HTTPException(status_code=500, detail=f"Error rendering template: {e}")
+
+        return wrapper
+
+    return decorator
+
+
 
 
 def check_accept_header(request: Request) -> bool:
@@ -23,12 +57,6 @@ def check_accept_header(request: Request) -> bool:
     if accept_header and "text/html" in accept_header:
         return True
     return False
-
-
-def render_template(request: Request, template_name: str, context: dict = None):
-    if context is None:
-        context = {}
-    return templates.TemplateResponse(request=request, name=template_name, context=context)
 
 
 def return_json(data: any):

@@ -1,10 +1,6 @@
 {% extends 'base.html' %}
-{% block head %}
-    <title>eNtweni Booking - Welcome</title>
-    <link rel="stylesheet" href="{{ url_for('static', path='/css/style.css') }}">
-{% endblock %}
+<title>{% block title %}eNtweni Booking - Welcome{% endblock %}</title>
 {% block content %}
-  <img src="{{ url_for('static', path='/images/entweni-booking.png') }}" alt="Company Logo" class="logo">
     
     <div class="welcome-container">
         <h1 class="welcome-title">{{ "eNtweniBooking" }}</h1>

@@ -63,69 +63,110 @@ For now navigate to "127.0.0.1:8000" for a custom 404 error on the frontend, web
 
 ```sh
 ENTWENIBOOKING/backend
-├── auth
-│   ├── __init__.py
-│   ├── models.py
-│   ├── permissions.py
-│   ├── routers.py
-│   └── service.py
-├── common
-│   ├── utils
+├── data
+│   ├── requirements.txt
+│   └── server-config.json
+├── src
+│   ├── admin
 │   │   ├── __init__.py
-│   │   ├── cli.py
-│   │   └── views.py
-│   ├── __init__.py
-│   └── managers.py
-├── database
-│   └── __init__.py
-├── forms
-│   └── __init__.py
-├── notification
-│   ├── __init__.py
-│   ├── models.py
-│   ├── routers.py
-│   └── service.py
-├── organisation
-│   ├── __init__.py
-│   ├── models.py
-│   ├── routers.py
-│   └── service.py
-├── plugin
-│   ├── __init__.py
-│   ├── models.py
-│   ├── routers.py
-│   └── service.py
-├── plugins
-│   └── __init__.py
-├── product
-│   ├── __init__.py
-│   ├── models.py
-│   ├── routers.py
-│   └── service.py
-├── static
-│   ├── bootstrap
+│   │   └── admin.py
+│   ├── auth
+│   │   ├── __init__.py
+│   │   ├── models.py
+│   │   ├── routers.py
+│   │   ├── schemas.py
+│   │   ├── services.py
+│   │   └── utils.py
+│   ├── booking
+│   │   ├── __init__.py
+│   │   ├── models.py
+│   │   ├── routers.py
+│   │   ├── schemas.py
+│   │   └── services.py
+│   ├── core
+│   │   ├── __init__.py
+│   │   ├── config.py
+│   │   ├── decorators.py
+│   │   ├── enums.py
+│   │   ├── models.py
+│   │   ├── routers.py
+│   │   └── schemas.py
+│   ├── database
+│   │   ├── __init__.py
+│   │   └── core.py
+│   ├── forms
+│   │   └── __init__.py
+│   ├── notification
+│   │   ├── __init__.py
+│   │   ├── models.py
+│   │   ├── routers.py
+│   │   └── service.py
+│   ├── organisation
+│   │   ├── __init__.py
+│   │   ├── models.py
+│   │   ├── routers.py
+│   │   ├── schemas.py
+│   │   └── services.py
+│   ├── plugin
+│   │   ├── __init__.py
+│   │   ├── models.py
+│   │   ├── routers.py
+│   │   └── service.py
+│   ├── plugins
+│   │   └── __init__.py
+│   ├── product
+│   │   ├── __init__.py
+│   │   ├── models.py
+│   │   ├── routers.py
+│   │   ├── schemas.py
+│   │   └── service.py
+│   ├── registration
+│   │   ├── __init__.py
+│   │   ├── routers.py
+│   │   ├── schemas.py
+│   │   └── services.py
+│   ├── static
 │   │   ├── css
-│   │   │   └── bootstrap.min.css
-│   │   └── js
-│   │       └── bootstrap.min.js
-│   └── templates
-│       ├── base.html.j2
-│       ├── home.html.j2
-│       ├── index.html.j2
-│       └── login.html.j2
-├── api.py
-├── config.py
-├── decorators.py
-├── enums.py
-├── exceptions.py
-├── logging.py
-├── main.py
-├── models.py
-├── rate_limiter.py
-├── requirements.txt
-├── run.py
-├── scheduler.py
-└── server-config.json
+│   │   │   ├── bootstrap.min.css
+│   │   │   ├── sign-in.css
+│   │   │   └── style.css
+│   │   ├── images
+│   │   │   ├── entweni-booking.png
+│   │   │   └── question-mark-leaves.jpg
+│   │   ├── js
+│   │   │   └── bootstrap.min.js
+│   │   ├── public
+│   │   │   └── robots.txt
+│   │   └── templates
+│   │       ├── auth
+│   │       │   ├── login.html
+│   │       │   ├── me.html
+│   │       │   └── signup.html
+│   │       ├── booking
+│   │       │   ├── create.html
+│   │       │   ├── detail.html
+│   │       │   ├── edit.html
+│   │       │   └── list.html
+│   │       ├── organisation
+│   │       │   ├── create.html
+│   │       │   ├── detail.html
+│   │       │   ├── edit.html
+│   │       │   └── list.html
+│   │       ├── product
+│   │       │   ├── create.html
+│   │       │   ├── detail.html
+│   │       │   ├── edit.html
+│   │       │   └── list.html
+│   │       ├── 404.html
+│   │       ├── 500.html
+│   │       ├── base.html
+│   │       ├── home.html
+│   │       └── index.html
+│   ├── __init__.py
+│   ├── api.py
+│   └── main.py
+├── tests
+└── run.py
 ```
 
 `Linux`
@@ -203,14 +244,7 @@ sudo curl -X GET --data-binary @server-config.json --unix-socket /var/run/contro
 
 The backend server will be deployed using `Nginx Unit`, an Nginx server built to deploy multiple web apps on the same server with just different port access.
 
-## `Contributing`
-
-Contributions to the eNtweni Booking API are welcome and will be closely examined by lead devs before integration.
-If you cannot contribute with writing code, kindly star the project and your efforts will not be taken for granted.
-Thank you for supporting `eNtweni Team`
-
-
-## `LOGIN WITH GOOGLE`
+## `LOGIN WITH GOOGLE SETUP`
 1. Login to google Cloud Console
 2. Create project `entwenibooking
 3. Enable APIs and Services
@@ -218,3 +252,10 @@ Thank you for supporting `eNtweni Team`
     ii. Enable it
 4. Create OAuth2.0 Credentials
 5. Retrieve Client ID and Secret
+
+## `Contributing`
+
+Contributions to the eNtweni Booking API are welcome and will be closely examined by lead devs before integration.
+If you cannot contribute with writing code, kindly star the project and your efforts will not be taken for granted.
+Thank you for supporting `eNtweni Team`
+
