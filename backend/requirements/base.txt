@@ -1,8 +1,6 @@
 fastapi
-uvicorn
 sqlalchemy
 pydantic
-jose
 jwt
 fastapi_limiter
 sqladmin

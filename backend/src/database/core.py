@@ -11,16 +11,16 @@ from sqlalchemy import Boolean, DateTime, func
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 
-from src.core.config import settings
+from .config import database_settings
 
 
-DATABASE_URL = settings.DATABASE_URL or (f"postgresql+asyncpg://{settings.DATABASE_USER}:{settings.DATABASE_PASSWORD}@{settings.DATABASE_HOST}:{settings.DATABASE_PORT}/{settings.DATABASE_NAME}")
+DATABASE_URL = database_settings.DATABASE_URL or (f"postgresql+asyncpg://{database_settings.DATABASE_USER}:{database_settings.DATABASE_PASSWORD}@{database_settings.DATABASE_HOST}:{database_settings.DATABASE_PORT}/{database_settings.DATABASE_NAME}")
 
 async_engine = create_async_engine(
-    settings.DATABASE_URL,
-    pool_size=settings.DATABASE_ENGINE_POOL_SIZE,
-    max_overflow=settings.DATABASE_ENGINE_MAX_OVERFLOW,
-    pool_pre_ping=settings.DATABASE_ENGINE_POOL_PING,
+    database_settings.DATABASE_URL,
+    pool_size=database_settings.DATABASE_ENGINE_POOL_SIZE,
+    max_overflow=database_settings.DATABASE_ENGINE_MAX_OVERFLOW,
+    pool_pre_ping=database_settings.DATABASE_ENGINE_POOL_PING,
     isolation_level="AUTOCOMMIT",
 )
 AsyncSessionLocal = async_sessionmaker(bind=async_engine)

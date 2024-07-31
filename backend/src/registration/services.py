@@ -37,4 +37,6 @@ async def create_user(db_session: AsyncSession, *, user_schema: UserRegistration
 
 
 class ImageSaver():
-    pass
+    @classmethod
+    def save_user_image(cls, user, uploaded_image):
+        pass

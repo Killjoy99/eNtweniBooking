@@ -9,7 +9,7 @@ import boto3
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class GlobalSettings(BaseSettings):
-    model_config = SettingsConfigDict(env_file="data/.env", env_file_encoding="utf-8")
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
     
     ENVIRONMENT: str = "development"
     # App Settings
@@ -23,62 +23,12 @@ class GlobalSettings(BaseSettings):
     SENTRY_DSN: str = ""
     #################################### sentry ####################################
     
-    #################################### Database ####################################
-    DATABASE_USER: str = "serpent99"
-    DATABASE_PASSWORD: str = "Mamlangeni0711"
-    DATABASE_HOST: str = "localhost"
-    DATABASE_PORT: str = "5432"
-    DATABASE_NAME: str = "entwenibooking"
-    DATABASE_SCHEMA: str = "entwenibooking"
-    DATABASE_ENGINE_POOL_SIZE: int = 20
-    DATABASE_ENGINE_MAX_OVERFLOW: int = 0
-    # Deal with DB disconnects
-    # https://docs.sqlalchemy.org/en/20/core/pooling.html#pool-disconnects
-    DATABASE_ENGINE_POOL_PING: bool = False
-    # this will support special chars for credentials
-    _QUOTED_DATABASE_PASSWORD: str = parse.quote(str(DATABASE_PASSWORD))
-    # specify a single database URL
-    DATABASE_URL: str = f"postgresql+asyncpg://{DATABASE_USER}:{_QUOTED_DATABASE_PASSWORD}@{DATABASE_HOST}:{DATABASE_PORT}/{DATABASE_NAME}"
-    #################################### Database ####################################
-    
     #################################### static files ####################################
     STATIC_HOST: str = "http://localhost:8001"
     DEFAULT_STATIC_DIR: str = os.path.join(os.path.abspath(os.path.dirname(__file__)), os.path.join("../static"))
     STATIC_DIR: str = DEFAULT_STATIC_DIR
     TEMPLATE_DIR: str = path.join(STATIC_DIR, "templates")
     #################################### static files ####################################
-
-    
-    #################################### auth related ####################################
-    JWT_ACCESS_SECRET_KEY: str = "9d9bc4d77ac3a6fce1869ec8222729d2"
-    JWT_REFRESH_SECRET_KEY: str = "fdc5635260b464a0b8e12835800c9016"
-    ENCRYPTION_ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
-    NEW_ACCESS_TOKEN_EXPIRE_MINUTES: int = 120
-    REFRESH_TOKEN_EXPIRE_MINUTES: int = 60 * 24
-    # Google Auth
-    GOOGLE_CLIENT_ID: str = os.getenv("GOOGLE_CLIENT_ID", "")
-    GOOGLE_CLIENT_SECRET: str = os.getenv("GOOGLE_CLIENT_SECRET", "")
-    GOOGLE_USERINFO_URL: str = "https://www.googleapis.com/oauth2/v3/userinfo"
-    GOOGLE_AUTH_URL: str = "https://accounts.google.com/o/oauth2/auth"
-    GOOGLE_TOKEN_URL: str = "https://oauth2.googleapis.com/token"
-    REDIRECT_URI: str = "http://localhost:8000/api/v1/auth/callback"
-    # openapi
-    OPENAPI_PROJECT_SECRET_KEY: str
-    #################################### auth related ####################################
-    
-    #################################### admin ####################################
-    ADMIN_SECRET_KEY: str = "Hv9LGqARc473ceBUYDw1FR0QaXOA3Ky4"
-    #################################### admin ####################################
-
-    #################################### redis for caching ####################################
-    REDIS_CACHE_ENABLED: bool = True
-    REDIS_HOST: str = "chat-redis"
-    REDIS_PORT: str | int = 6379
-    REDIS_PASSWORD: str | None = None
-    REDIS_CACHE_EXPIRATION_SECONDS: int = 60 * 30
-    REDIS_DB: int = 0
-    #################################### redis for caching ####################################
     
     
 class TestSettings(GlobalSettings):
@@ -90,10 +40,10 @@ class DevelopmentSettings(GlobalSettings):
 
 
 class ProductionSettings(GlobalSettings):
-    AWS_ACCESS_KEY_ID: str
-    AWS_SECRET_ACCESS_KEY: str
-    AWS_REGION_NAME: str
-    AWS_IMAGES_BUCKET: str
+    AWS_ACCESS_KEY_ID: str = ""
+    AWS_SECRET_ACCESS_KEY: str = ""
+    AWS_REGION_NAME: str = ""
+    AWS_IMAGES_BUCKET: str = ""
 
     LOG_LEVEL: int = logging.INFO
     

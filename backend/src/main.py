@@ -97,7 +97,7 @@ async def default_page(request: Request, call_next):
 #     )
     
     
-@frontend.get("/")
+@frontend.get("/", name="index")
 @render_template(template_name="index.html")
 async def index(request: Request):
     return {"data": {}, "error_message": None}

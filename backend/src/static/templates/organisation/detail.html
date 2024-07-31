@@ -1,24 +1,35 @@
 {% extends 'base.html' %}
 
+{% block title %}
+    eNtweniBooking - Organisation Details
+{% endblock %}
+
 {% block head %}
-    <title>eNtweniBooking - Organisation</title>
     <link rel="stylesheet" href="{{ url_for('static', path='/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', path='/css/style.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', path='/css/sign-in.css') }}">
 {% endblock %}
 
 {% block content %}
-    <div style="width: 100%; background: #efefef; border-radius: 10px; padding: 10px;">
-        <div style="margin: 0 auto; width: 90%; text-align: center;">
-            <h1 style="background-color: rgba(0, 53, 102, 1); padding: 5px 10px; border-radius: 5px; color: white;">{{ organisation.name }}</h1>
-            <div style="margin: 30px auto; background: white; width: 40%; border-radius: 10px; padding: 50px; text-align: center;">
-            <h3 style="margin-bottom: 100px; font-size: 24px;">{{ organisation.logo_url }}</h3>
-            <p style="margin-bottom: 30px;">{{ organisation.description }}</p>
-            <a class="btn btn-outline-warning" href="{{ url_for('organisation_deactivate', organisation_id=organisation.id) }}">Deactivate</a>
-            <a class="btn btn-success" href="http://">Edit</a>
-            <a class="btn btn-danger" href="{{ url_for('organisation_delete', organisation_id=organisation.id) }}">Delete</a>
+<div class="container my-5">
+    <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white text-center">
+            <h1>{{ organisation.name }}</h1>
+        </div>
+        <div class="card-body">
+            <div class="text-center">
+                <img src="{{ organisation.logo_url }}" alt="{{ organisation.name }} Logo" class="img-fluid mb-4" style="max-width: 200px;">
+            </div>
+            <p class="text-center">{{ organisation.description }}</p>
+            <div class="d-flex justify-content-center">
+                <form action="{{ url_for('organisation_deactivate', organisation_id=organisation.id) }}" method="post" class="me-2">
+                    <button class="btn btn-warning" type="submit">Deactivate</button>
+                </form>
+                <a class="btn btn-success me-2" href="#">Edit</a>
+                <form action="{{ url_for('organisation_delete', organisation_id=organisation.id) }}" method="post">
+                    <button class="btn btn-danger" type="submit">Delete</button>
+                </form>
             </div>
         </div>
     </div>
-    
+</div>
 {% endblock %}
