@@ -195,6 +195,12 @@ python -m uvicorn main:app --reload          # run the backend app
 
 ## `Deployment`
 
+## `DEVELOPMENT`
+```sh
+python run.py
+```
+
+## `PRODUCTION`
 On production we will be using Nginx Unit
 
 1. Json Configuaration
