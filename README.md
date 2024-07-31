@@ -208,3 +208,13 @@ The backend server will be deployed using `Nginx Unit`, an Nginx server built to
 Contributions to the eNtweni Booking API are welcome and will be closely examined by lead devs before integration.
 If you cannot contribute with writing code, kindly star the project and your efforts will not be taken for granted.
 Thank you for supporting `eNtweni Team`
+
+
+## `LOGIN WITH GOOGLE`
+1. Login to google Cloud Console
+2. Create project `entwenibooking
+3. Enable APIs and Services
+    i. Select the Google+ API
+    ii. Enable it
+4. Create OAuth2.0 Credentials
+5. Retrieve Client ID and Secret

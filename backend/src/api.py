@@ -13,6 +13,7 @@ from src.organisation.routers import organisation_router
 from src.booking.routers import booking_router
 from src.product.routers import product_router
 from src.registration.routers import account_router
+from src.core.routers import home_router
 
 
 class ErrorMessage(BaseModel):
@@ -38,11 +39,12 @@ api_router = APIRouter(
 # WARNING: do not use this unless you want unauthenticated routes
 authenticated_api_router = APIRouter()
 
+api_router.include_router(home_router)
+api_router.include_router(account_router)
 api_router.include_router(auth_router)
 api_router.include_router(organisation_router)
 api_router.include_router(booking_router)
 api_router.include_router(product_router)
-api_router.include_router(account_router)
 
 # NOTE: Other routers go here below in order
 

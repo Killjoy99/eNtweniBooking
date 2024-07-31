@@ -13,7 +13,7 @@ from fastapi.routing import compile_path
 from src.core.config import settings
 from src.database.core import async_engine
 from src.core.decorators import render_template, check_accept_header
-from src.admin.admin import UserAdmin, OrganisationAdmin, ProductAdmin
+from src.admin.admin import UserAdmin, OrganisationAdmin, ProductAdmin, BookingAdmin
 
 from .api import api_router
 
@@ -39,6 +39,8 @@ admin = Admin(api, async_engine)
 admin.add_view(UserAdmin)
 admin.add_view(OrganisationAdmin)
 admin.add_view(ProductAdmin)
+admin.add_view(BookingAdmin)
+
 
 @frontend.get("/")
 async def index(request: Request):

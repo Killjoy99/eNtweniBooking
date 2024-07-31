@@ -2,6 +2,7 @@
 
 {% block head %}
     <title>eNtweni Booking - Home</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/style.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -9,15 +10,17 @@
         Welcome
     </h1>
     <h2>
-        logged in as {{ data.user }}
+        logged in as ......
     </h2>
     <h2>
         Your roles are:
-        {% for role in data.roles %}
             <h3>
                 role
             </h3>
-        {% endfor %}
     </h2>
+    <br>
+    <form action="{{ url_for('logout') }}"" method="post">
+        <button type="submit">logout</button>
+    </form>
     
 {% endblock %}

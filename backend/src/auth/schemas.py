@@ -3,31 +3,13 @@ from pydantic import EmailStr, Field, field_validator, BaseModel
 from typing import Optional, List
 
 
-class UserCreateSchema(BaseModel):
-    username: str
-    email: EmailStr
-    password: str
-    # organisation_id: int
+class GoogleLoginSchema(BaseModel):
+    access_token: str
     
 
 class UserLoginSchema(BaseModel):
     login_identifier: str
     password: str
-    
-    
-class UserUpdateSchema(BaseModel):
-    username: str
-    password: str
-    email: EmailStr
-    
-
-class UserReadSchema(BaseModel):
-    username: str
-    email: EmailStr
-
-
-class GoogleLoginSchema(BaseModel):
-    access_token: str
     
 
 class UserLoginResponseSchema(BaseModel):

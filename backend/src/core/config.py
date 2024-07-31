@@ -55,6 +55,12 @@ class GlobalSettings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     NEW_ACCESS_TOKEN_EXPIRE_MINUTES: int = 120
     REFRESH_TOKEN_EXPIRE_MINUTES: int = 60 * 24
+    # Google Auth
+    GOOGLE_CLIENT_ID: str
+    GOOGLE_USERINFO_URL: str = "https://www.googleapis.com/oauth2/v3/userinfo"
+    GOOGLE_AUTH_URL: str = "https://accounts.google.com/o/oauth2/auth"
+    GOOGLE_TOKEN_URL: str = "https://oauth2.googleapis.com/token"
+    REDIRECT_URI: str = "http://localhost:8000/api/v1/auth/callback"
     #################################### auth related ####################################
     
     #################################### admin ####################################
