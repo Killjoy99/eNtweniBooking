@@ -3,4 +3,8 @@ uvicorn
 sqlalchemy
 pydantic
 jose
+jwt
+fastapi_limiter
+sqladmin
+passlib
 fastapi_offline #for testing purposes

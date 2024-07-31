@@ -62,6 +62,7 @@ For now navigate to "127.0.0.1:8000" for a custom 404 error on the frontend, web
 > The Folder Structure follows the netflix-dispatch fomular for fastapi apps. this is a robust structure that allows for exponential growth of the api without issues.
 
 ```sh
+tree --dirsfirst -I __pycache__
 ENTWENIBOOKING/backend
 ├── data
 │   ├── requirements.txt

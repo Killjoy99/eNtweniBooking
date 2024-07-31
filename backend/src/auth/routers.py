@@ -7,6 +7,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.responses import RedirectResponse, JSONResponse
 from fastapi_limiter.depends import RateLimiter
 from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
+
 from src.database.core import get_async_db
 from src.core.config import settings
 from src.core.decorators import check_accept_header, render_template, return_json
