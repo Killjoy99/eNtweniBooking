@@ -5,22 +5,22 @@
         adaptive_size: True
         markup: True
         halign: 'center'
-        text: "[size=20sp][b][color=#008080]Welcome to[/color][/b][/size]"
+        text: "[size=20sp][b][color=#008080]Welcome [/color][/b][/size]"
         pos_hint: {'center_x': 0.5, "center_y": .8}
+
+    MDLabel:
+        adaptive_size: True
+        markup: True
+        halign: 'center'
+        valign: 'center'
+        text: f"[size=100sp][b][color=#008080].[/color][/size][/b]" if root.status == "online" else f"[size=100sp][b][color=#ff0000].[/color][/size][/b]"
+        pos_hint: {'center_x': .5, "top": 1}
 
     Image:
         adaptive_size: True
         size_hint: .8, .38
         pos_hint: {'center_x': 0.5,'center_y': 0.5}
         source: "data/images/logo.png"
-
-    MDLabel:
-        adaptive_size: True
-        markup: True
-        # halign: 'center'
-        text: f"[color=#008080]Online[/color]" if root.status == "online" else f"[color=#808080]Offline[/color]"
-        pos_hint: {'right': 1, "bottom": 1}
-                
 
     MDBoxLayout:
         orientation: 'horizontal'

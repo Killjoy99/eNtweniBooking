@@ -1,8 +1,46 @@
 import logging
+import os
 
 from openapi_schema_pydantic import OpenAPI, Operation
 
 logging.basicConfig(level=logging.INFO)
+
+
+def generate_models(schema: OpenAPI) -> str:
+    """Generate Pydantic model classes based on the OpenAPI schema definitions."""
+    model_code = """
+from typing import Any, Dict, Optional
+from pydantic import BaseModel
+
+    
+    """
+
+    for model_name, model_schema in schema.components.schemas.items():
+        fields = []
+        for prop_name, prop_schema in model_schema.properties.items():
+            pydantic_type = "Any"  # Default type
+            if "type" in prop_schema:
+                if prop_schema["type"] == "string":
+                    pydantic_type = "str"
+                elif prop_schema["type"] == "integer":
+                    pydantic_type = "int"
+                elif prop_schema["type"] == "number":
+                    pydantic_type = "float"
+                elif prop_schema["type"] == "boolean":
+                    pydantic_type = "bool"
+                elif prop_schema["type"] == "array":
+                    item_type = prop_schema["items"].get("type", "Any")
+                    pydantic_type = f"List[{item_type}]"
+                elif prop_schema["type"] == "object":
+                    pydantic_type = "Dict[str, Any]"
+            fields.append(f"{prop_name}: {pydantic_type}")
+
+        model_code += f"""
+class {model_name}(BaseModel):
+    {'\n    '.join(fields)}
+"""
+
+    return model_code
 
 
 def generate_client_code(
@@ -12,7 +50,6 @@ def generate_client_code(
 
     def create_method_code(method: str, path: str, operation: Operation) -> str:
         func_name = (
-            # operation.operationId
             operation.operationId or f"{method}_{path.replace('/', '_')}".lower()
         )
         func_name = func_name.replace("{", "").replace(
@@ -61,21 +98,37 @@ class EntweniSDKClient:
 
     # Generate methods for each path and operation
     for path, path_item in schema.paths.items():
-        for method in path_item.model_fields_set:
+        for method in path_item.__fields_set__:
             operation: Operation = getattr(path_item, method)
             class_code += create_method_code(method, path, operation)
 
     return class_code
 
 
-def write_client_module(code: str, file_path: str):
-    """Write the generated code to a Python file."""
-    with open(file_path, "w") as file:
+def write_client_and_models(code: str, models_code: str, folder_path: str):
+    """Write the generated code to Python files in the specified folder."""
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
+
+    main_file = os.path.join(folder_path, "main.py")
+    models_file = os.path.join(folder_path, "models.py")
+    init_file = os.path.join(folder_path, "__init__.py")
+
+    # Write the client code to main.py
+    with open(main_file, "w") as file:
         file.write(code)
 
+    # Write the models code to models.py
+    with open(models_file, "w") as file:
+        file.write(models_code)
 
-# Example usage
-async def generate_and_save_client(schema_url: str, base_url: str, output_file: str):
+    # Create an empty __init__.py
+    # import the sdk in the init file
+    with open(init_file, "w") as file:
+        file.write("from .main import EntweniSDKClient")
+
+
+async def generate_and_save_client(schema_url: str, base_url: str, output_folder: str):
     from httpx import AsyncClient
 
     async with AsyncClient() as client:
@@ -85,4 +138,5 @@ async def generate_and_save_client(schema_url: str, base_url: str, output_file: 
 
     schema = OpenAPI.model_validate(schema_data)
     client_code = generate_client_code(schema, base_url)
-    write_client_module(client_code, output_file)
+    models_code = generate_models(schema)
+    write_client_and_models(client_code, models_code, output_folder)

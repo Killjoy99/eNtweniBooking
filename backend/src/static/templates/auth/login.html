@@ -11,8 +11,8 @@
             <h2 class="card-title text-center">Login</h2>
             <form action="{{ url_for('login') }}" method="post">
                 <div class="mb-3">
-                    <label for="username" class="form-label">Username</label>
-                    <input type="text" class="form-control" id="username" name="username" placeholder="Enter your username" required value="{{ request.query_params.get('username', '') }}">
+                    <label for="login_identifier" class="form-label">Username</label>
+                    <input type="text" class="form-control" id="login_identifier" name="login_identifier" placeholder="Enter Username / Email" required value="{{ request.query_params.get('username', '') }}">
                 </div>
                 <div class="mb-3">
                     <label for="password" class="form-label">Password</label>

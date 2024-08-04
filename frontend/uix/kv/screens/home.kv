@@ -3,9 +3,14 @@
     # on_enter: root.add_organisations()
     md_bg_color: root.theme_cls.backgroundColor
 
+    MDLabel:
+        adaptive_size: True
+        active: False
+        markup: True
+        text: "[size=20sp][color=#ff0000]No Registered Service Providers.[/color][/size]"
+        pos_hint: {'center_x': .5, "center_y": .5}
+
     MDList:
         id: organisation_list
         pos_hint: {'center_x': 0.5,'top': 1.0}
         spacing: 10
-        MDLabel:
-            text: 'The List starts here'

@@ -21,8 +21,9 @@ class WelcomeScreen(MDScreen):
         asyncio.create_task(self.async_health_check())
 
     async def async_health_check(self):
-        data = await self.client.healthcheck_healthcheck_get()
-        if data:
+        status = await self.client.healthcheck_healthcheck_get()
+
+        if status.get("detail") == "STATUS_OK":
             self.status = "online"
         else:
             self.status = "offline"
@@ -35,11 +36,17 @@ class RegisterScreen(MDScreen):
     def __init__(self, **kwargs):
         super(RegisterScreen, self).__init__(**kwargs)
 
-    #     Window.bind(on_key_down=self.handle_keyboard)
+        Window.bind(on_key_down=self.handle_keyboard)
 
-    # def handle_keyboard(self, instance, keyboard, keycode, text, modifiers):
-    #     if self.ids.password.focus and keycode == 40:
-    #         self.login(self.do_remember_me, self.ids.email.text, self.ids.password.text)
+    def handle_keyboard(self, instance, keyboard, keycode, text, modifiers):
+        if self.ids.password_confirm.focus and keycode == 40:
+            self.register(
+                username=self.ids.username.text,
+                email=self.ids.email.text,
+                first_name=self.ids.first_name.text,
+                last_name=self.ids.last_name.text,
+                password=self.ids.password_confirm.text,
+            )
 
     def on_pre_enter(self):
         self.client = EntweniSDKClient()
@@ -59,7 +66,8 @@ class RegisterScreen(MDScreen):
             data=register_json
         )
         # check the type of register_response and populate errors accordingly
-        print(register_response)
+        if register_response.get("status_code") == 302:
+            self.root.push("home")
 
 
 class LoginScreen(MDScreen):
@@ -73,11 +81,11 @@ class LoginScreen(MDScreen):
 
     def handle_keyboard(self, instance, keyboard, keycode, text, modifiers):
         if self.ids.password.focus and keycode == 40:
-            self.login(self.do_remember_me, self.ids.email.text, self.ids.password.text)
-        # print(keycode)
-        # # Change focus with tab
-        # if self.ids.username.focus and keycode == 43:
-        #     self.ids.password.focus = True
+            self.login(
+                self.do_remember_me,
+                self.ids.login_identifier.text,
+                self.ids.password.text,
+            )
 
     def on_pre_enter(self):
         self.client = EntweniSDKClient()
@@ -88,14 +96,24 @@ class LoginScreen(MDScreen):
         else:
             self.do_remember_me = False
 
-    def login(self, remember_me: bool, email: str, password: str):
-        asyncio.create_task(self.async_login(email=email, password=password))
+    def login(self, remember_me: bool, login_identifier: str, password: str):
+        asyncio.create_task(
+            self.async_login(login_identifier=login_identifier, password=password)
+        )
 
     async def async_login(self, *args, **kwargs):
-        login_json = {"email": kwargs.get("email"), "password": kwargs.get("password")}
+        login_json = {
+            "login_identifier": kwargs.get("login_identifier"),
+            "password": kwargs.get("password"),
+        }
         login_response = await self.client.login_login__post(data=login_json)
+        # try and see if we received the cookies
+        # TODO: Retrieve and Store the cookies for automatic login {Store in a local database}
         # check the response we get and handle accordingly
-        print(f"LOGIN RESPONSE IS: {login_response}")
+        if login_response.get("detail") == "LOGIN_SUCCESS":
+            self.manager.push_replacement("home")
+
+        print(login_response.get("detail"))
 
 
 class PasswordResetScreen(MDScreen):

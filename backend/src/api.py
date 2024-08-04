@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, status
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
@@ -30,10 +30,7 @@ api_router.include_router(product_router)
 async def healthcheck(
     db_session: async_sessionmaker[AsyncSession] = Depends(get_async_db),
 ):
-    try:
-        return {"status", "ok"}
-    except Exception as e:
-        return {"status": f"{e}"}
+    return JSONResponse(status_code=status.HTTP_200_OK, content={"detail": "STATUS_OK"})
 
 
 # api_router.include_router(authenticated_organisation_api_router, dependencies=[Depends(get_current_user)])

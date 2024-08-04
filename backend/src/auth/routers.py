@@ -14,7 +14,6 @@ from fastapi import (
     status,
 )
 from fastapi.responses import JSONResponse, RedirectResponse
-from fastapi.security import OAuth2PasswordRequestForm
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -23,6 +22,7 @@ from src.database.core import get_async_db
 
 from .config import auth_settings
 from .models import User
+from .schemas import UserLoginSchema
 from .services import (
     authenticate_user,
     create_user_from_google_credentials,
@@ -32,29 +32,11 @@ from .services import (
     update_user_last_login,
     verify_google_token,
 )
-from .utils import create_access_token, create_refresh_token
+from .utils import create_access_token, create_refresh_token, set_cookies_and_json
 
 logger = logging.getLogger(__name__)
 
-
 auth_router = APIRouter(tags=["Authentication"])
-
-
-async def set_cookies(response: Response, access_token: str, refresh_token: str):
-    response.set_cookie(
-        key="access_token",
-        value=access_token,
-        httponly=True,
-        samesite="none",
-        secure=True,
-    )
-    response.set_cookie(
-        key="refresh_token",
-        value=refresh_token,
-        httponly=True,
-        samesite="none",
-        secure=True,
-    )
 
 
 @auth_router.get("/me", name="me")
@@ -64,6 +46,7 @@ async def get_me(
     db_session: AsyncSession = Depends(get_async_db),
     is_template: Optional[bool] = Depends(check_accept_header),
 ):
+    """Return the logged-in user's information."""
     if is_template:
         return {"data": {}, "error_message": None}
     return return_json(data={"message": "Return the logged-in user"})
@@ -74,6 +57,7 @@ async def get_me(
 async def login_page(
     request: Request, is_template: Optional[bool] = Depends(check_accept_header)
 ):
+    """Render the login page."""
     if is_template:
         return {"data": {}, "error_message": None}
     return return_json(data={})
@@ -88,19 +72,32 @@ async def login(
     background_tasks: BackgroundTasks,
     is_template: Optional[bool] = Depends(check_accept_header),
     db_session: AsyncSession = Depends(get_async_db),
-    form_data: OAuth2PasswordRequestForm = Depends(OAuth2PasswordRequestForm),
 ):
-    login_identifier, password = None, None
+    """Authenticate user and create access and refresh tokens."""
+    login_schema: Optional[UserLoginSchema] = None
 
-    if form_data:
-        login_identifier = form_data.username.lower()
-        password = form_data.password
+    # Check if request content type is JSON
+    if is_template:
+        form = await request.form()
+        login_schema = UserLoginSchema(
+            login_identifier=form.get("login_identifier"),  # type: ignore
+            password=form.get("password"),  # type: ignore
+        )
     else:
-        raise HTTPException(status_code=400, detail="No login credentials provided")
+        login_schema = UserLoginSchema(**await request.json())
+
+    # Validate login_identifier and password
+    if not login_schema:
+        raise HTTPException(
+            status_code=400, detail="Login identifier and password required"
+        )
 
     try:
+        # Authenticate user
         user: Optional[User] = await authenticate_user(
-            db_session=db_session, login_identifier=login_identifier, password=password
+            db_session=db_session,
+            login_identifier=login_schema.login_identifier,
+            password=login_schema.password,
         )
 
         if not user:
@@ -109,11 +106,11 @@ async def login(
                 return RedirectResponse(
                     request.url_for("sign_in"), status_code=status.HTTP_302_FOUND
                 )
-                # return {"data": {}, "error_message": error_message}
-            return JSONResponse(status_code=400, content={"error": error_message})
+            return JSONResponse(status_code=400, content={"message": error_message})
 
+        # Create tokens
         access_token = await create_access_token(
-            login_identifier,
+            login_schema.login_identifier,
             user_data={
                 "user_id": user.id,
                 "username": user.username,
@@ -122,7 +119,7 @@ async def login(
             },
         )
         refresh_token = await create_refresh_token(
-            login_identifier,
+            login_schema.login_identifier,
             user_data={
                 "user_id": user.id,
                 "username": user.username,
@@ -131,26 +128,21 @@ async def login(
             },
         )
 
-        # await set_cookies(response, access_token, refresh_token)
-        response.set_cookie(
-            key="access_token",
-            value=access_token,
-            httponly=True,
-            samesite="none",
-            secure=True,
-        )
-        response.set_cookie(
-            key="refresh_token",
-            value=refresh_token,
-            httponly=True,
-            samesite="none",
-            secure=True,
-        )
-
+        cookies = await set_cookies_and_json(response, access_token, refresh_token)
+        # Update user last login time
         background_tasks.add_task(update_user_last_login, db_session, user=user)
-        return RedirectResponse(
-            url=request.url_for("home"), status_code=status.HTTP_302_FOUND
-        )
+
+        # Return appropriate response
+        if is_template:
+            return RedirectResponse(
+                url=request.url_for("home"),
+                status_code=status.HTTP_302_FOUND,
+            )
+        else:
+            return JSONResponse(
+                status_code=status.HTTP_200_OK,
+                content={"detail": "LOGIN_SUCCESS", "cookies": cookies},
+            )
 
     except Exception as e:
         logger.error(f"Error during login: {e}")
@@ -161,6 +153,7 @@ async def login(
     "/google-login/", summary="Redirect to Google OAuth2 login", name="google_login"
 )
 async def google_login():
+    """Redirect to Google OAuth2 login."""
     google_auth_url = (
         f"{auth_settings.GOOGLE_AUTH_URL}?response_type=code"
         f"&client_id={auth_settings.GOOGLE_CLIENT_ID}&redirect_uri={auth_settings.REDIRECT_URI}"
@@ -171,6 +164,7 @@ async def google_login():
 
 @auth_router.get("/callback", summary="Handle Google OAuth2 callback", name="callback")
 async def callback(request: Request, db_session: AsyncSession = Depends(get_async_db)):
+    """Handle Google OAuth2 callback and authenticate user."""
     code = request.query_params.get("code")
     if not code:
         raise HTTPException(status_code=400, detail="Authorization code not provided")
@@ -227,6 +221,7 @@ async def get_new_access_token_from_refresh_token(
     response: Response,
     db_session: AsyncSession = Depends(get_async_db),
 ):
+    """Create a new access token from the refresh token."""
     try:
         payload = jwt.decode(
             refresh_token,
@@ -252,7 +247,7 @@ async def get_new_access_token_from_refresh_token(
             login_identifier,
             expires_delta=timedelta(
                 minutes=auth_settings.NEW_ACCESS_TOKEN_EXPIRE_MINUTES
-            ),
+            ),  # type: ignore
         )
 
         response.set_cookie(
@@ -286,6 +281,7 @@ async def get_new_access_token_from_refresh_token(
 async def logout(
     request: Request, response: Response, current_user: User = Depends(get_current_user)
 ):
+    """Logout the user by removing http-only cookies."""
     expires = datetime.utcnow() + timedelta(seconds=1)
     response.set_cookie(
         key="access_token",
@@ -303,4 +299,4 @@ async def logout(
         samesite="none",
         expires=expires.strftime("%a, %d %b %Y %H:%M:%S GMT"),
     )
-    return "Cookies removed"
+    return JSONResponse(status_code=200, content={"message": "Successfully logged out"})

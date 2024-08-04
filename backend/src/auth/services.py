@@ -1,24 +1,26 @@
 import asyncio
 import logging
-import jwt
+from typing import Annotated, Optional
 
-from fastapi import status, Cookie, Depends, HTTPException
+import jwt
+from fastapi import Cookie, Depends, HTTPException, status
 from httpx import AsyncClient, Response
-from typing import Optional, Annotated
+from sqlalchemy import and_, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, or_, and_, func
 
 from src.core.config import settings
 from src.database.core import get_async_db
 
 from .models import User
-from .utils import get_hashed_password, verify_password, generate_secure_password
+from .utils import generate_secure_password, get_hashed_password, verify_password
 
 logger = logging.getLogger(__name__)
 
 
 # Authenticate a user based on username/email and password
-async def authenticate_user(db_session: AsyncSession, login_identifier: str, password: str) -> Optional[User]:
+async def authenticate_user(
+    db_session: AsyncSession, login_identifier: str, password: str
+) -> Optional[User]:
     """
     Authenticate a user based on their username/email and password.
 
@@ -29,15 +31,22 @@ async def authenticate_user(db_session: AsyncSession, login_identifier: str, pas
     """
     await asyncio.sleep(0.1)  # mitigate user enumeration attacks
 
-    user = await get_user_by_login_identifier(db_session, login_identifier=login_identifier)
+    user = await get_user_by_login_identifier(
+        db_session, login_identifier=login_identifier
+    )
 
-    if user and await verify_password(plain_password=password, hashed_password=user.password):
+    if user and await verify_password(
+        plain_password=password, hashed_password=user.password
+    ):
         return user
-    
+
     return None
 
+
 # Get a user with either email or username provided
-async def get_user_by_login_identifier(db_session: AsyncSession, *, login_identifier: str) -> Optional[User]:
+async def get_user_by_login_identifier(
+    db_session: AsyncSession, *, login_identifier: str
+) -> Optional[User]:
     """
     Retrieve a user by their login identifier (username or email).
 
@@ -45,9 +54,12 @@ async def get_user_by_login_identifier(db_session: AsyncSession, *, login_identi
     :param login_identifier: The login identifier, either username or email.
     :return: User object if found, otherwise None.
     """
-    query = select(User).where(or_(User.email == login_identifier, User.username == login_identifier))
+    query = select(User).where(
+        or_(User.email == login_identifier, User.username == login_identifier)
+    )
     result = await db_session.execute(query)
     return result.scalar_one_or_none()
+
 
 # Get a user using their email
 async def get_user_by_email(db_session: AsyncSession, *, email: str) -> Optional[User]:
@@ -58,12 +70,21 @@ async def get_user_by_email(db_session: AsyncSession, *, email: str) -> Optional
     :param email: The user's email address.
     :return: User object if found, otherwise None.
     """
-    query = select(User).where(and_(User.email == email, User.is_deleted.is_(False)))
-    result = await db_session.execute(query)
-    return result.scalar_one_or_none()
+    try:
+        query = select(User).where(
+            and_(User.email == email, User.is_deleted.is_(False))
+        )
+        result = await db_session.execute(query)
+        return result.scalar_one_or_none()
+    except Exception:
+        logger.debug("Error getting user by email: {e}")
+        await db_session.rollback()
+
 
 # Create a user from Google credentials
-async def create_user_from_google_credentials(db_session: AsyncSession, **kwargs) -> User:
+async def create_user_from_google_credentials(
+    db_session: AsyncSession, **kwargs
+) -> User:
     """
     Create a user using Google credentials.
 
@@ -86,6 +107,7 @@ async def create_user_from_google_credentials(db_session: AsyncSession, **kwargs
     await db_session.commit()
     return user
 
+
 # Verify the auth token received by client after Google sign-in
 async def verify_google_token(google_access_token: str) -> Optional[dict[str, str]]:
     """
@@ -96,7 +118,9 @@ async def verify_google_token(google_access_token: str) -> Optional[dict[str, st
     """
     async with AsyncClient() as client:
         try:
-            response: Response = await client.get(f"{settings.GOOGLE_USERINFO_URL}?access_token={google_access_token}")
+            response: Response = await client.get(
+                f"{settings.GOOGLE_USERINFO_URL}?access_token={google_access_token}"
+            )
             response.raise_for_status()
             user_info: dict[str, str] = response.json()
         except Exception as e:
@@ -105,8 +129,9 @@ async def verify_google_token(google_access_token: str) -> Optional[dict[str, st
 
     if {"email", "given_name", "family_name"}.issubset(user_info):
         return user_info
-    
+
     return None
+
 
 # Update user's last login time
 async def update_user_last_login(db_session: AsyncSession, *, user: User) -> None:
@@ -116,14 +141,26 @@ async def update_user_last_login(db_session: AsyncSession, *, user: User) -> Non
     :param db_session: Database session for executing queries.
     :param user: User object to be updated.
     """
-    user.last_login = func.now()
-    await db_session.commit()
-    logger.debug(f"Updated last login time for user {user.id}")
-
-
-async def get_current_user(access_token: Annotated[str, Cookie()],db_session: AsyncSession = Depends(get_async_db)) -> User:
     try:
-        payload = jwt.decode(access_token, settings.JWT_ACCESS_SECRET_KEY, algorithms=[settings.ENCRYPTION_ALGORITHM])
+        user.last_login = func.now()
+        db_session.add(user)
+        await db_session.commit()
+        logger.debug(f"Updated last login time for user {user.id}")
+    except Exception as e:
+        logger.error(f"Error updating last login: {e}")
+        await db_session.rollback()
+
+
+async def get_current_user(
+    access_token: Annotated[str, Cookie()],
+    db_session: AsyncSession = Depends(get_async_db),
+) -> User:
+    try:
+        payload = jwt.decode(
+            access_token,
+            settings.JWT_ACCESS_SECRET_KEY,
+            algorithms=[settings.ENCRYPTION_ALGORITHM],
+        )
         login_identifier: str = payload.get("sub")
         if not login_identifier:
             raise HTTPException(
@@ -132,9 +169,13 @@ async def get_current_user(access_token: Annotated[str, Cookie()],db_session: As
                 headers={"WWW-Authenticate": "Bearer"},
             )
     except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token expired")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Token expired"
+        )
     except jwt.InvalidTokenError:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid Access Token")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid Access Token"
+        )
     except jwt.PyJWTError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -142,7 +183,9 @@ async def get_current_user(access_token: Annotated[str, Cookie()],db_session: As
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    user: User | None = await get_user_by_login_identifier(db_session, login_identifier=login_identifier)
+    user: User | None = await get_user_by_login_identifier(
+        db_session, login_identifier=login_identifier
+    )
 
     if not user:
         raise HTTPException(
