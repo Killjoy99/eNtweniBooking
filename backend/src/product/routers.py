@@ -1,27 +1,28 @@
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, status, Request
-
+from fastapi import APIRouter, Depends, Request
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncAttrs, AsyncSession
+from sqlalchemy.ext.asyncio import AsyncSession
 
+from src.core.decorators import check_accept_header, render_template
 from src.database.core import get_async_db
-from src.core.decorators import check_accept_header, render_template, return_json
 
 from .models import Product
-from .schemas import ProductCreate, ProductRead
-
 
 product_router = APIRouter(prefix="/products", tags=["Products"])
 
 
 @product_router.get("", name="read_products")
 @render_template(template_name="product/list.html")
-async def get_products(request: Request, is_template: Optional[bool]=Depends(check_accept_header), db: AsyncSession = Depends(get_async_db)):
+async def get_products(
+    request: Request,
+    is_template: Optional[bool] = Depends(check_accept_header),
+    db: AsyncSession = Depends(get_async_db),
+):
     """Get all products."""
     statement = await db.execute(select(Product))
     products = statement.scalars().all()
-    
+
     if is_template:
         return {"data": products, "error_message": None}
     else:

@@ -1,8 +1,6 @@
-from pydantic import Field, BaseModel
-from pydantic.color import Color
-from typing import Optional, List
+from typing import List, Optional
 
-
+from pydantic import BaseModel, Field
 
 
 class OrganisationBase(BaseModel):
@@ -11,7 +9,7 @@ class OrganisationBase(BaseModel):
     description: Optional[str] = Field(None)
     default: Optional[bool] = Field(False)
     slug: Optional[str] = Field()
-    
+
 
 class OrganisationCreateSchema(BaseModel):
     name: str
@@ -28,8 +26,8 @@ class OrganisationUpdateSchema(BaseModel):
 class OrganisationReadSchema(OrganisationBase):
     id: int
     slug: str
-    
-    
+
+
 class OrganisationDeactivateSchema(BaseModel):
     name: str
     slug: str
@@ -38,6 +36,7 @@ class OrganisationDeactivateSchema(BaseModel):
 
 class OrganisationResponseSchema(BaseModel):
     organisations: List[OrganisationBase]
+
 
 # class OrganisationPagination(Pagination):
 #     items: List[OrganisationRead] = []

@@ -4,8 +4,7 @@ import jwt
 
 from fastapi import status, Cookie, Depends, HTTPException
 from httpx import AsyncClient, Response
-from datetime import datetime, timedelta
-from typing import Any, Optional, Annotated
+from typing import Optional, Annotated
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, or_, and_, func
 

@@ -1,16 +1,11 @@
-from typing import Optional, List
-from pydantic.color import Color
-
-from sqlalchemy import ForeignKey, func
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column
 
 from src.database.core import Base
-from src.organisation.models import Organisation
-from src.booking.models import Booking
+
 
 class Product(Base):
     __tablename__ = "products"
-    
+
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(unique=True)
     slug: Mapped[str]

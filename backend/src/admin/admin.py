@@ -1,10 +1,9 @@
-from kivy.uix.modalview import ModalView
 from sqladmin import ModelView
 
 from src.auth.models import User
+from src.booking.models import Booking
 from src.organisation.models import Organisation
 from src.product.models import Product
-from src.booking.models import Booking
 
 
 class UserAdmin(ModelView, model=User):
@@ -12,12 +11,24 @@ class UserAdmin(ModelView, model=User):
 
 
 class OrganisationAdmin(ModelView, model=Organisation):
-    column_list = [Organisation.id, Organisation.name, Organisation.description, Organisation.active, Organisation.is_deleted]
-    
-    
+    column_list = [
+        Organisation.id,
+        Organisation.name,
+        Organisation.description,
+        Organisation.active,
+        Organisation.is_deleted,
+    ]
+
+
 class ProductAdmin(ModelView, model=Product):
     column_list = [Product.id, Product.name, Product.description]
-    
+
 
 class BookingAdmin(ModelView, model=Booking):
-    column_list = [Booking.id, Booking.description, Booking.created_at, Booking.updated_at, Booking.is_deleted]
+    column_list = [
+        Booking.id,
+        Booking.description,
+        Booking.created_at,
+        Booking.updated_at,
+        Booking.is_deleted,
+    ]

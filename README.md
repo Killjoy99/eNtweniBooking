@@ -1,7 +1,7 @@
 # `eNtweniBooking`
 
-
 ## MY GIT Commands
+
 ```sh
 git pull                    # request update from remote branch
 git add .                   # stage files for commit
@@ -16,14 +16,13 @@ git push -u origin <branch_name>
 
 ```
 
-
 A booking API with ride hailing and food delivery microservices.
 
 ## `Tech Stack`
 
-    Python
-    FastAPI
-    Kivy/Kivymd
+Python
+FastAPI
+Kivy/Kivymd
 
 ### `Requirements`
 
@@ -36,6 +35,7 @@ These are the development steps for both the frontend and the backend
 ### `Frontend`
 
 `Linux`
+
 ```sh
     cd frontend/
     python -m venv venv
@@ -46,17 +46,22 @@ These are the development steps for both the frontend and the backend
 
 `Windows`
 
+```ps
     cd frontend/
     python -m venv venv
     .\venv\Scripts\activate.bat # activate the virtual environment
     pip install -r requirements.txt
     python main.py          # run the frontend app
+```
 
 ### `Backend`
+
 Run backend
+
 ```sh
 python run.py
 ```
+
 For now navigate to "127.0.0.1:8000" for a custom 404 error on the frontend, webapp, to configure api next
 
 > The Folder Structure follows the netflix-dispatch fomular for fastapi apps. this is a robust structure that allows for exponential growth of the api without issues.
@@ -182,35 +187,41 @@ python -m uvicorn main:app --reload          # run the backend app
 
 `Windows`
 
+```ps
     cd backend/
     python -m venv backend
     source venv/bin/activate # activate the virtual environment
     pip install -r requirements.txt
     python -m uvicorn main:app --reload          # run the backend app
+```
 
 `Bootstrap`
 
-    Download bootstrap 5 and extact it to the static folder.
-    Rename the folder bootstrap
+Download bootstrap 5 and extact it to the static folder.
+Rename the folder bootstrap
 
 ## `Deployment`
 
 ## `DEVELOPMENT`
+
 ```sh
 python run.py
 ```
 
 ## `PRODUCTION`
+
 On production we will be using Nginx Unit
 
 ## `Configure Nginx Unit`
 
 1. Create a new service for Nginx Unit
+
 ```sh
 sudo nano /etc/systemd/system/unit.service
 ```
 
 2. Add the following content to the service file
+
 ```ini
 [Unit]
 Description=Nginx Unit
@@ -225,27 +236,33 @@ Restart=always
 [Install]
 WantedBy=multi-user.target
 ```
+
 Make sure that the ExecStart path matches the location of the unitd executable on your system. If it's different, adjust accordingly.
+
 ```sh
 which unitd
 ```
 
 3. Reload systemd to apply the new service file
+
 ```sh
 sudo systemctl enable unit.service
 ```
 
 4. Start the Nginx Unit service immediately
+
 ```sh
 sudo systemctl start unit.service
 ```
 
 4. Check the status of the service to ensure it's running
+
 ```sh
 sudo systemctl status unit.service
 ```
 
 5. Reload and restart the service if failed
+
 ```sh
 sudo systemctl daemon-reload
 sudo systemctl restart unit.service
@@ -254,6 +271,7 @@ sudo systemctl restart unit.service
 6. Check for Required Directories and Permissions
 
 Ensure that the directories and files required by Nginx Unit have the correct permissions. You might need to adjust the permissions of your application directory to be accessible by the unit user:
+
 ```sh
 sudo chown -R unit:unit /path/to/your/app
 ```
@@ -261,10 +279,10 @@ sudo chown -R unit:unit /path/to/your/app
 7. Check the Configuration
 
 Ensure that your Nginx Unit configuration is correct. Invalid configurations can cause the service to fail. You can test your configuration file before applying it:
+
 ```sh
 sudo unitd --check
 ```
-
 
 `Additional Notes`
 If you need to make any changes to the service file, always reload the systemd configuration using sudo systemctl daemon-reload after making changes.
@@ -320,6 +338,7 @@ sudo curl -X GET --data-binary @server-config.json --unix-socket /var/run/contro
 The backend server will be deployed using `Nginx Unit`, an Nginx server built to deploy multiple web apps on the same server with just different port access.
 
 ## `LOGIN WITH GOOGLE SETUP`
+
 1. Login to google Cloud Console
 2. Create project `entwenibooking
 3. Enable APIs and Services
@@ -328,9 +347,15 @@ The backend server will be deployed using `Nginx Unit`, an Nginx server built to
 4. Create OAuth2.0 Credentials
 5. Retrieve Client ID and Secret
 
+
+## `EntweniSDK`
+
+In the frontend a folder for generating methods to call the backend has the code to generate the frontend api, We named the folder entweni_openapi_sdk for covenience.
+This code generates methods based o the openapi json schema when the dev server is running.
+TODO: updated the entweni_openapi_sdk to also get the models when generating the frontend code for convenience so that we do not send raw json but rather Model data.
+
 ## `Contributing`
 
 Contributions to the eNtweni Booking API are welcome and will be closely examined by lead devs before integration.
 If you cannot contribute with writing code, kindly star the project and your efforts will not be taken for granted.
 Thank you for supporting `eNtweni Team`
-

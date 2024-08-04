@@ -1,12 +1,12 @@
 import logging
-
-from fastapi import APIRouter, Depends, Request, Response, HTTPException
-from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Optional
-from src.database.core import get_async_db
-from src.core.decorators import render_template, return_json, check_accept_header
-from src.auth.utils import decode_access_token, decode_refresh_token
 
+from fastapi import APIRouter, Depends, Request, Response
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from src.auth.utils import decode_access_token, decode_refresh_token
+from src.core.decorators import check_accept_header, render_template, return_json
+from src.database.core import get_async_db
 
 logger = logging.getLogger(__name__)
 
@@ -20,16 +20,16 @@ async def home(
     request: Request,
     response: Response,
     db_session: AsyncSession = Depends(get_async_db),
-    is_template: Optional[bool] = Depends(check_accept_header)
+    is_template: Optional[bool] = Depends(check_accept_header),
 ):
     if is_template:
         # Get cookies
         access_token = request.cookies.get("access_token")
         refresh_token = request.cookies.get("refresh_token")
-        
+
         user_info = {}
         error_message = None
-        
+
         try:
             # Decode the access token to get user information
             if access_token:

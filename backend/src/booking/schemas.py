@@ -1,5 +1,5 @@
 from pydantic import Field, BaseModel
-from typing import Optional, List
+from typing import Optional
 
 
 class BookingBase(BaseModel):

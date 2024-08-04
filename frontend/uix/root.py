@@ -1,13 +1,9 @@
 import json
 
-from kivymd.uix.navigationbar import MDNavigationBar, MDNavigationItem
-from kivymd.uix.screenmanager import MDScreenManager
-
-from kivy.storage.jsonstore import JsonStore
+from applibs import utils
 from kivy.core.window import Window
 from kivy.lang import Builder
-
-from applibs import utils
+from kivymd.uix.screenmanager import MDScreenManager
 
 
 class Root(MDScreenManager):

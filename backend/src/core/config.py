@@ -1,40 +1,41 @@
 import logging
 import os
-import asyncio
 from os import path
 from random import randint
-from urllib import parse
 
 import boto3
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+
 class GlobalSettings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
-    
+
     ENVIRONMENT: str = "development"
     # App Settings
     ALLOWED_ORIGINS: str = "http://127.0.0.1:3000,http://localhost:3000"
-    
+
     #################################### logging ####################################
     LOG_LEVEL: int = logging.DEBUG
     #################################### logging ####################################
-    
+
     #################################### sentry ####################################
     SENTRY_DSN: str = ""
     #################################### sentry ####################################
-    
+
     #################################### static files ####################################
     STATIC_HOST: str = "http://localhost:8001"
-    DEFAULT_STATIC_DIR: str = os.path.join(os.path.abspath(os.path.dirname(__file__)), os.path.join("../static"))
+    DEFAULT_STATIC_DIR: str = os.path.join(
+        os.path.abspath(os.path.dirname(__file__)), os.path.join("../static")
+    )
     STATIC_DIR: str = DEFAULT_STATIC_DIR
     TEMPLATE_DIR: str = path.join(STATIC_DIR, "templates")
     #################################### static files ####################################
-    
-    
+
+
 class TestSettings(GlobalSettings):
     DATABASE_SCHEMA: str = f"test_{randint(1, 100)}"
-    
-    
+
+
 class DevelopmentSettings(GlobalSettings):
     pass
 
@@ -46,7 +47,7 @@ class ProductionSettings(GlobalSettings):
     AWS_IMAGES_BUCKET: str = ""
 
     LOG_LEVEL: int = logging.INFO
-    
+
     @staticmethod
     def get_aws_client_for_image_upload():
         if all(
@@ -63,10 +64,10 @@ class ProductionSettings(GlobalSettings):
             )
             s3_resource = aws_session.resource("s3")
 
-            return s3_resource.meta.client
+            return s3_resource.meta.client  # type: ignore
         else:
             return None
-        
+
 
 def get_settings():
     env = os.environ.get("ENVIRONMENT", "development")
@@ -76,7 +77,7 @@ def get_settings():
         return DevelopmentSettings()
     elif env == "production":
         return ProductionSettings()
-    
+
     return GlobalSettings()
 
 

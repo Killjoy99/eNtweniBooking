@@ -1,8 +1,5 @@
-from typing import Optional, List
-from pydantic.color import Color
 
-from sqlalchemy import ForeignKey, func
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column
 
 from src.database.core import Base
 

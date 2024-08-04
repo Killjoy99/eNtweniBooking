@@ -1,70 +1,117 @@
 <RegisterScreen>
+# MDScreen:
     md_bg_color: root.theme_cls.backgroundColor
     padding: 20
-    MDLabel:
-        adaptive_size: True
-        markup: True
-        halign: 'center'
-        text: "[size=20sp][b][color=#008080]Welcome to[/color][/b][/size]"
-        pos_hint: {'center_x': 0.5, "center_y": .8}
 
     MDCard:
-            # elevation: 2
-        radius: 0
-        size_hint: .8, .38
-        pos_hint: {'center_x': 0.5, "center_y": .5}
-        canvas.before:
-            PushMatrix: 
-            Rotate:
-                angle: 45
-                origin: self.center
-        canvas.after:
-            PopMatrix:
-                
-        MDRelativeLayout:
-            Image:
-                adaptive_size: True
-                pos_hint: {'center_x': 0.5,'center_y': 0.5}
-                source: "data/images/logo.png"
-                # canvas.before:
-                #     PushMatrix: 
-                #     Rotate:
-                #         angle: 45
-                #         origin: self.center
-                # canvas.after:
-                #     PopMatrix:
+        orientation: 'vertical'
+        # md_bg_color: root.theme_cls.backgroundColor
+        style: "outlined"
+        pos_hint: {"center_x": .5, "center_y": .5}
+        size_hint: .8, .8
+        spacing: 10
+        padding: 0,0,0,dp(20)
 
-    MDLabel:
-        adaptive_size: True
-        markup: True
-        halign: 'center'
-        text: "[b][color=#008080][size=36sp]eNtweni[/size][/color][/b]"
-        pos_hint: {'center_x': 0.2, "center_y": .67}
-        canvas.before:
-            PushMatrix: 
-            Rotate:
-                angle: 45
-                origin: self.center
-        canvas.after:
-            PopMatrix: 
+        MDBoxLayout:
+            orientation: 'vertical'
 
-    MDLabel:
-        adaptive_size: True
-        markup: True
-        halign: 'center'
-        text: "[b][color=#008080][size=36sp]Booking[/size][/color][/b]"
-        pos_hint: {'center_x': 0.8, "center_y": .67}
-        canvas.before:
-            PushMatrix:
-            Rotate:
-                angle: -45
-                origin: self.center
-        canvas.after:
-            PopMatrix:
+            # FitImage:
+            #     source: "data/images/logo.png"
+            #     pos_hint: {"center_x": 0.5}
 
-    MDButton:
-        on_release: root.manager.push("register")
-        pos_hint: {'center_x': 0.8, "center_y": .2}
-        radius: dp(2)
-        MDButtonText:
-            text: "Register"
+            MDBoxLayout:
+                orientation: 'vertical'
+                spacing: 10
+                size_hint_x: .9
+                pos_hint: {'center_x': 0.5}
+                padding: 0,0,0,dp(20)
+
+                MDTextField:
+                    id: username
+                    allow_copy: True
+                    on_text_validate: email.focus = True
+
+                    MDTextFieldLeadingIcon:
+                        icon: "account"
+
+                    MDTextFieldHintText:
+                        text: "Username"
+
+                MDTextField:
+                    id: email
+                    allow_copy: True
+                    on_text_validate: first_name.focus = True
+
+                    MDTextFieldLeadingIcon:
+                        icon: "account"
+
+                    MDTextFieldHintText:
+                        text: "Email"
+
+                MDTextField:
+                    id: first_name
+                    allow_copy: True
+                    on_text_validate: last_name.focus = True
+
+                    MDTextFieldLeadingIcon:
+                        icon: "account"
+
+                    MDTextFieldHintText:
+                        text: "First Name"
+
+                MDTextField:
+                    id: last_name
+                    allow_copy: True
+                    on_text_validate: password.focus = True
+
+                    MDTextFieldLeadingIcon:
+                        icon: "account"
+
+                    MDTextFieldHintText:
+                        text: "Username"
+
+                MDTextField:
+                    id: password
+                    pos_hint: {'center_x': 0.5}
+                    allow_copy: False
+                    password: True
+                    on_text_validate: password_confirm.focus = True
+
+                    MDTextFieldLeadingIcon:
+                        icon: "account"
+
+                    MDTextFieldHintText:
+                        text: "Password"
+
+                MDTextField:
+                    id: password_confirm
+                    pos_hint: {'center_x': 0.5}
+                    allow_copy: False
+                    password: True
+                    on_text_validate: register.focus = True
+
+                    MDTextFieldLeadingIcon:
+                        icon: "account"
+
+                    MDTextFieldHintText:
+                        text: "Password"
+
+        MDButton:
+            id: register
+            on_release: root.register(username=username.text, email=email.text, first_name=first_name.text, last_name=last_name.text, password=password_confirm.text)
+            pos_hint: {'center_x': 0.5}
+            radius: dp(2)
+            style: "filled"
+            focus: False
+            MDButtonText:
+                text: "REGISTER"
+            MDButtonIcon:
+                icon: 'account'
+
+        MDLabel:
+            markup: True
+            pos_hint: {'center_x': 0.5}
+            halign: 'center'
+            adaptive_height: True
+            text: "Already have an account? [b][color=#008080][ref=]Sign In[/ref][/color][/b]"
+            on_ref_press: root.manager.push("login")

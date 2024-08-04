@@ -1,19 +1,17 @@
 import logging
+from typing import Optional
 
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status, Request
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request, status
 from fastapi.responses import RedirectResponse
-from httpx import request
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
-from typing import Annotated, Optional
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.core.decorators import check_accept_header, render_template, return_json
-from src.database.core import get_async_db
 from src.auth.models import User
 from src.auth.services import get_user_by_login_identifier
+from src.core.decorators import check_accept_header, render_template, return_json
+from src.database.core import get_async_db
 
 from .schemas import UserRegistrationSchema
 from .services import ImageSaver, create_user
-
 
 logger = logging.getLogger(__name__)
 
@@ -21,16 +19,23 @@ logger = logging.getLogger(__name__)
 account_router = APIRouter(tags=["Account"])
 
 
-@account_router.get("/register", summary="Endpoint for the frontend template", name="signup")
+@account_router.get(
+    "/register", summary="Endpoint for the frontend template", name="signup"
+)
 @render_template(template_name="auth/signup.html")
-async def register(request: Request, is_template: Optional[bool]=Depends(check_accept_header), db_session: AsyncSession=Depends(get_async_db)):
+async def register(
+    request: Request,
+    is_template: Optional[bool] = Depends(check_accept_header),
+    db_session: AsyncSession = Depends(get_async_db),
+):
     if is_template:
         data = {}
         return {"data": {}, "error_message": None}
     else:
         data = {}
         return return_json(data=data)
-    
+
+
 # user data and image in one endpoint
 # https://github.com/tiangolo/fastapi/issues/2257
 # https://stackoverflow.com/questions/60127234/how-to-use-a-pydantic-model-with-form-data-in-fastapi
@@ -43,8 +48,14 @@ async def register_user(
 ):
     try:
         # Check if the user already exists
-        if await get_user_by_login_identifier(db_session=db_session, login_identifier=user_schema.email or user_schema.username):
-            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="User with provided credentials already exists")
+        if await get_user_by_login_identifier(
+            db_session=db_session,
+            login_identifier=user_schema.email or user_schema.username,
+        ):
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="User with provided credentials already exists",
+            )
 
         # Create a new user
         user: User = await create_user(db_session=db_session, user_schema=user_schema)
@@ -56,8 +67,7 @@ async def register_user(
 
         # Redirect to login page with the username and password
         return RedirectResponse(
-            url=request.url_for("sign_in"),
-            status_code=status.HTTP_302_FOUND
+            url=request.url_for("sign_in"), status_code=status.HTTP_302_FOUND
         )
 
     except Exception as e:

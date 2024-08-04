@@ -1,26 +1,19 @@
 import logging
-
 from os import path
-from fastapi import FastAPI, Request, HTTPException
+
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi_offline import FastAPIOffline
-from fastapi.responses import PlainTextResponse
-from fastapi.exception_handlers import http_exception_handler
-
-from fastapi_limiter import FastAPILimiter
-
 from sqladmin import Admin
 
+from src.admin.admin import BookingAdmin, OrganisationAdmin, ProductAdmin, UserAdmin
 from src.core.config import settings
+from src.core.decorators import render_template, templates
 from src.database.core import async_engine
-from src.core.decorators import render_template
-from src.admin.admin import UserAdmin, OrganisationAdmin, ProductAdmin, BookingAdmin
-from src.core.decorators import templates
 
 from .api import api_router
-
 
 logging.basicConfig(
     level=logging.INFO,
@@ -28,7 +21,7 @@ logging.basicConfig(
     handlers=[
         logging.StreamHandler(),
         # Add more handlers if needed, e.g., FileHandler
-    ]
+    ],
 )
 logger = logging.getLogger(__name__)
 
@@ -73,14 +66,18 @@ async def log_requests(request: Request, call_next):
     logger.info(f"Response status code: {response.status_code}")
     return response
 
+
 @frontend.middleware("http")
 async def default_page(request: Request, call_next):
     response = await call_next(request)
     if response.status_code == 404:
         # Render the 404 page using the custom template
-        template_response = templates.TemplateResponse("404.html", {"request": request, "data": {}, "error_message": "Not Found"})
+        template_response = templates.TemplateResponse(
+            "404.html", {"request": request, "data": {}, "error_message": "Not Found"}
+        )
         return HTMLResponse(content=template_response.body.decode(), status_code=404)
     return response
+
 
 # @frontend.exception_handler(HTTPException)
 # async def custom_http_exception_handler(request: Request, exc: HTTPException):
@@ -95,8 +92,8 @@ async def default_page(request: Request, call_next):
 #         content=templates.TemplateResponse("500.html", {"request": request, "error_message": "Internal Server Error"}).body.decode(),
 #         status_code=500
 #     )
-    
-    
+
+
 @frontend.get("/", name="index")
 @render_template(template_name="index.html")
 async def index(request: Request):

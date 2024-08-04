@@ -1,18 +1,29 @@
-from pydantic import BaseModel
-from pydantic import EmailStr, Field, field_validator, BaseModel
-from typing import Optional, List
+from pydantic import BaseModel, EmailStr
 
 from src.core.config import settings
 
 
 class GoogleLoginSchema(BaseModel):
     access_token: str
-    
+
 
 class UserLoginSchema(BaseModel):
     login_identifier: str
     password: str
-    
+    # @field_validator("password", mode="after")
+    # @classmethod
+    # async def valid_password(cls, password: str) -> str:
+    #     if not re.match(STRONG_PASSWORD_PATTERN, password):
+    #         raise ValueError(
+    #             "Password must contain atleast"
+    #             "one lower case character, "
+    #             "one upper case character, "
+    #             "digit or "
+    #             "special symbol"
+    #         )
+
+    #     return password
+
 
 class UserLoginResponseSchema(BaseModel):
     username: str
@@ -22,10 +33,10 @@ class UserLoginResponseSchema(BaseModel):
     settings: dict
     user_image: str | None
     # role: List[Roles]
-    
+
     class Config:
         from_attribute = True
-        
+
     @classmethod
     def add_image_host(cls, image_url: str | None) -> str | None:
         if image_url:
