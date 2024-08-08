@@ -1,0 +1,27 @@
+{
+  "listeners": {
+    "*:80": {
+      "pass": "applications/default"
+    },
+	"*:8000": {
+      "pass": "applications/testapp"
+    }
+  },
+  "routes": [],
+  "applications": {
+    "default": {
+      "type": "php",
+      "processes": 20,
+      "root": "/var/www/html/"
+    },
+    "testapp": {
+      "type": "python3.11",
+      "path": "/var/www/entweni/",
+      "module": "testapp.main",
+      "callable": "app",
+      "protocol": "asgi",
+      "user": "testapp",
+      "group": "testapp"
+    }
+  }
+}

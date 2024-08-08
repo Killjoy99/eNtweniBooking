@@ -1,3 +1,7 @@
 kivy
 https://github.com/kivymd/KivyMD/archive/master.zip
 plyer
+pydantic
+pydantic_settings
+fastapi
+fastapi_online

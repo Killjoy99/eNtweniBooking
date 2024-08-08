@@ -6,14 +6,32 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi_offline import FastAPIOffline
+from pyinstrument import Profiler
+from pyinstrument.renderers.html import HTMLRenderer  # noqa: F401
 from sqladmin import Admin
 
 from src.admin.admin import BookingAdmin, OrganisationAdmin, ProductAdmin, UserAdmin
 from src.core.config import settings
-from src.core.decorators import render_template, templates
+from src.core.utils import templates
 from src.database.core import async_engine
 
 from .api import api_router
+
+
+class PyInstrumentMiddleware:
+    def __init__(self, app):
+        self.app = app
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] == "http":
+            profiler = Profiler()
+            profiler.start()
+            await self.app(scope, receive, send)
+            profiler.stop()
+            profiler.open_in_browser()
+        else:
+            await self.app(scope, receive, send)
+
 
 logging.basicConfig(
     level=logging.INFO,
@@ -28,6 +46,7 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI(openapi_url="")
 
+app.add_middleware(PyInstrumentMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000"],  # Adjust according to your needs
@@ -60,14 +79,6 @@ admin.add_view(BookingAdmin)
 
 
 @frontend.middleware("http")
-async def log_requests(request: Request, call_next):
-    logger.info(f"Request path: {request.url.path}")
-    response = await call_next(request)
-    logger.info(f"Response status code: {response.status_code}")
-    return response
-
-
-@frontend.middleware("http")
 async def default_page(request: Request, call_next):
     response = await call_next(request)
     if response.status_code == 404:
@@ -79,25 +90,9 @@ async def default_page(request: Request, call_next):
     return response
 
 
-# @frontend.exception_handler(HTTPException)
-# async def custom_http_exception_handler(request: Request, exc: HTTPException):
-#     return HTMLResponse(
-#         content=templates.TemplateResponse("500.html", {"request": request, "error_message": exc.detail}).body.decode(),
-#         status_code=exc.status_code
-#     )
-
-# @frontend.exception_handler(Exception)
-# async def general_exception_handler(request: Request, exc: Exception):
-#     return HTMLResponse(
-#         content=templates.TemplateResponse("500.html", {"request": request, "error_message": "Internal Server Error"}).body.decode(),
-#         status_code=500
-#     )
-
-
 @frontend.get("/", name="index")
-@render_template(template_name="index.html")
-async def index(request: Request):
-    return {"data": {}, "error_message": None}
+def index(request: Request):
+    return templates.TemplateResponse(request=request, name="index.html")
 
 
 if settings.STATIC_DIR and path.isdir(settings.STATIC_DIR):

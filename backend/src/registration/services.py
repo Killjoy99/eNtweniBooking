@@ -27,6 +27,7 @@ async def create_user(
 
     db_session.add(new_user)
     await db_session.commit()
+    await db_session.refresh(new_user)
 
     return new_user
 

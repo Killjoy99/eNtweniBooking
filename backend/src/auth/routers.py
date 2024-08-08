@@ -17,7 +17,7 @@ from fastapi.responses import JSONResponse, RedirectResponse
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.core.decorators import check_accept_header, render_template, return_json
+from src.core.utils import check_accept_header, templates
 from src.database.core import get_async_db
 
 from .config import auth_settings
@@ -40,27 +40,28 @@ auth_router = APIRouter(tags=["Authentication"])
 
 
 @auth_router.get("/me", name="me")
-@render_template(template_name="me.html")
 async def get_me(
     request: Request,
     db_session: AsyncSession = Depends(get_async_db),
     is_template: Optional[bool] = Depends(check_accept_header),
 ):
     """Return the logged-in user's information."""
+    user_info = {"message": "Return the logged-in user"}
     if is_template:
-        return {"data": {}, "error_message": None}
-    return return_json(data={"message": "Return the logged-in user"})
+        return templates.TemplateResponse(
+            "me.html", {"request": request, "user": user_info}
+        )
+    return JSONResponse(content={"data": user_info, "error_message": None})
 
 
 @auth_router.get("/login", summary="Login template frontend", name="sign_in")
-@render_template(template_name="auth/login.html")
-async def login_page(
+def login_page(
     request: Request, is_template: Optional[bool] = Depends(check_accept_header)
 ):
     """Render the login page."""
     if is_template:
-        return {"data": {}, "error_message": None}
-    return return_json(data={})
+        return templates.TemplateResponse("auth/login.html", {"request": request})
+    return JSONResponse(status_code=status.HTTP_200_OK, content={})
 
 
 @auth_router.post(
@@ -70,13 +71,12 @@ async def login(
     request: Request,
     response: Response,
     background_tasks: BackgroundTasks,
-    is_template: Optional[bool] = Depends(check_accept_header),
     db_session: AsyncSession = Depends(get_async_db),
+    is_template: Optional[bool] = Depends(check_accept_header),
 ):
     """Authenticate user and create access and refresh tokens."""
     login_schema: Optional[UserLoginSchema] = None
 
-    # Check if request content type is JSON
     if is_template:
         form = await request.form()
         login_schema = UserLoginSchema(
@@ -86,14 +86,12 @@ async def login(
     else:
         login_schema = UserLoginSchema(**await request.json())
 
-    # Validate login_identifier and password
     if not login_schema:
         raise HTTPException(
             status_code=400, detail="Login identifier and password required"
         )
 
     try:
-        # Authenticate user
         user: Optional[User] = await authenticate_user(
             db_session=db_session,
             login_identifier=login_schema.login_identifier,
@@ -106,9 +104,13 @@ async def login(
                 return RedirectResponse(
                     request.url_for("sign_in"), status_code=status.HTTP_302_FOUND
                 )
-            return JSONResponse(status_code=400, content={"message": error_message})
+            return JSONResponse(
+                content={
+                    "status_code": status.HTTP_400_BAD_REQUEST,
+                    "detail": error_message,
+                }
+            )
 
-        # Create tokens
         access_token = await create_access_token(
             login_schema.login_identifier,
             user_data={
@@ -129,10 +131,8 @@ async def login(
         )
 
         cookies = await set_cookies_and_json(response, access_token, refresh_token)
-        # Update user last login time
         background_tasks.add_task(update_user_last_login, db_session, user=user)
 
-        # Return appropriate response
         if is_template:
             return RedirectResponse(
                 url=request.url_for("home"),
@@ -140,8 +140,11 @@ async def login(
             )
         else:
             return JSONResponse(
-                status_code=status.HTTP_200_OK,
-                content={"detail": "LOGIN_SUCCESS", "cookies": cookies},
+                content={
+                    "status_code": status.HTTP_202_ACCEPTED,
+                    "detail": "LOGIN_SUCCESS",
+                    "cookies": cookies,
+                },
             )
 
     except Exception as e:
@@ -205,7 +208,7 @@ async def callback(request: Request, db_session: AsyncSession = Depends(get_asyn
             refresh_token = await create_refresh_token(email)
 
             response = RedirectResponse(url="/")
-            await set_cookies(response, access_token, refresh_token)
+            await set_cookies_and_json(response, access_token, refresh_token)
             return response
 
     except Exception as e:
@@ -279,7 +282,10 @@ async def get_new_access_token_from_refresh_token(
     "/logout/", summary="Logout by removing http-only cookies", name="logout"
 )
 async def logout(
-    request: Request, response: Response, current_user: User = Depends(get_current_user)
+    request: Request,
+    response: Response,
+    current_user: User = Depends(get_current_user),
+    is_template: Optional[bool] = Depends(check_accept_header),
 ):
     """Logout the user by removing http-only cookies."""
     expires = datetime.utcnow() + timedelta(seconds=1)
@@ -299,4 +305,6 @@ async def logout(
         samesite="none",
         expires=expires.strftime("%a, %d %b %Y %H:%M:%S GMT"),
     )
+    if is_template:
+        return RedirectResponse(url=request.url_for("sign_in"))
     return JSONResponse(status_code=200, content={"message": "Successfully logged out"})

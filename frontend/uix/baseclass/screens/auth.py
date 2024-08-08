@@ -1,4 +1,6 @@
 import asyncio
+from typing import Optional
+from venv import logger
 
 from applibs.connection_manager import EntweniSDKClient
 from kivy.core.window import Window
@@ -30,9 +32,6 @@ class WelcomeScreen(MDScreen):
 
 
 class RegisterScreen(MDScreen):
-    # changing screens also can be done in python
-    # def goto_home_screen(self):
-    #     self.manager.push_replacement("home")
     def __init__(self, **kwargs):
         super(RegisterScreen, self).__init__(**kwargs)
 
@@ -51,8 +50,17 @@ class RegisterScreen(MDScreen):
     def on_pre_enter(self):
         self.client = EntweniSDKClient()
 
-    def register(self, **kwargs):
-        asyncio.create_task(self.async_register())
+    def register(
+        self,
+        username: str,
+        email: str,
+        password: str,
+        first_name: Optional[str],
+        last_name: Optional[str],
+    ):
+        asyncio.create_task(
+            self.async_register(username=username, email=email, password=password)
+        )
 
     async def async_register(self, *args, **kwargs):
         register_json = {
@@ -63,17 +71,23 @@ class RegisterScreen(MDScreen):
             "password": kwargs.get("password"),
         }
         register_response = await self.client.register_register__post(
-            data=register_json
+            data=register_json  # type: ignore
         )
         # check the type of register_response and populate errors accordingly
-        if register_response.get("status_code") == 302:
-            self.root.push("home")
+        status_code = register_response.get("status_code")
+        logger.error(status_code)
+        if status_code == 201:
+            self.manager.push("login")
+        elif status_code == 409:
+            # show message that username or email already registered
+            pass
 
 
 class LoginScreen(MDScreen):
     """A Screen with a list of all supported countries that can register on the app"""
 
     do_remember_me = False
+    error_opacity = 0  # Opacity of the error label
 
     def __init__(self, **kwargs):
         super(LoginScreen, self).__init__(**kwargs)
@@ -106,18 +120,22 @@ class LoginScreen(MDScreen):
             "login_identifier": kwargs.get("login_identifier"),
             "password": kwargs.get("password"),
         }
-        login_response = await self.client.login_login__post(data=login_json)
+        login_response = await self.client.login_login__post(data=login_json)  # type: ignore
         # try and see if we received the cookies
         # TODO: Retrieve and Store the cookies for automatic login {Store in a local database}
         # check the response we get and handle accordingly
-        if login_response.get("detail") == "LOGIN_SUCCESS":
-            self.manager.push_replacement("home")
+        status_code, message = (
+            login_response.get("status_code"),
+            login_response.get("detail"),
+        )
 
-        print(login_response.get("detail"))
+        if status_code == 400:
+            # popup an error dialog
+            logger.debug(message)
+        elif status_code == 202:
+            self.manager.push_replacement("home")
+        # background get and store the cookies for later reference
 
 
 class PasswordResetScreen(MDScreen):
-    # changing screens also can be done in python
-    # def goto_home_screen(self):
-    #     self.manager.push_replacement("home")
     pass

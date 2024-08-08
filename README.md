@@ -54,6 +54,34 @@ These are the development steps for both the frontend and the backend
     python main.py          # run the frontend app
 ```
 
+## `IMAGES MOBILE`
+
+Welcome: ![text][welcome]
+
+[welcome]: showcase/welcome.png
+
+Welcome: ![text][login]
+
+[login]: showcase/login.png
+
+Welcome: ![text][register]
+
+[register]: showcase/register.png
+
+Home: ![text][home]
+
+[home]: showcase/home.png
+
+## `IMAGES WEB`
+
+Home: ![text][login-web]
+
+[login-web]: showcase/login-web.png
+
+Home: ![text][register-web]
+
+[register-web]: showcase/register-web.png
+
 ### `Backend`
 
 Run backend
@@ -218,6 +246,12 @@ On production we will be using Nginx Unit
 
 ```sh
 sudo nano /etc/systemd/system/unit.service
+# find running instances of unit
+ps aux |grep unitd
+# kill the instance that causes problems
+sudo kill <pid>
+# run a new instance of unit
+sudo unitd --control 127.0.0.1:9000 --user unit
 ```
 
 2. Add the following content to the service file
@@ -346,7 +380,6 @@ The backend server will be deployed using `Nginx Unit`, an Nginx server built to
     ii. Enable it
 4. Create OAuth2.0 Credentials
 5. Retrieve Client ID and Secret
-
 
 ## `EntweniSDK`
 

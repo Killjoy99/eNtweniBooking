@@ -8,7 +8,7 @@ eNtweni Booking - Organisations
 <div class="container mt-5">
     <h1 class="text-center mb-4">Available Organisations</h1>
     <div class="row row-cols-1 row-cols-md-3 g-4">
-        {% for organisation in data.organisations %}
+        {% for organisation in organisations %}
         <div class="col">
             <div class="card h-100">
                 <img src="{{ organisation.logo_url }}" class="card-img-top" alt="{{ organisation.name }}">

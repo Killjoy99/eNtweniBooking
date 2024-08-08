@@ -1,0 +1,10 @@
+uvicorn
+fastapi-offline #for testing purposes
+plyer
+pydantic
+pydantic-settings
+fastapi
+asyncpg
+boto3
+jwt
+httpx

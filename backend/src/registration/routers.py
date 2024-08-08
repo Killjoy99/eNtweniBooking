@@ -2,12 +2,12 @@ import logging
 from typing import Optional
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request, status
-from fastapi.responses import RedirectResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.auth.models import User
 from src.auth.services import get_user_by_login_identifier
-from src.core.decorators import check_accept_header, render_template, return_json
+from src.core.utils import check_accept_header, templates
 from src.database.core import get_async_db
 
 from .schemas import UserRegistrationSchema
@@ -21,7 +21,6 @@ account_router = APIRouter(tags=["Account"])
 @account_router.get(
     "/register", summary="Endpoint for the frontend template", name="signup"
 )
-@render_template(template_name="auth/signup.html")
 async def register(
     request: Request,
     is_template: Optional[bool] = Depends(check_accept_header),
@@ -29,9 +28,13 @@ async def register(
 ):
     """Render the user registration template."""
     if is_template:
-        return {"data": {}, "error_message": None}
+        return templates.TemplateResponse(
+            request=request,
+            name="auth/signup.html",
+            context={"data": {}, "error_message": None},
+        )
     else:
-        return return_json(data={})
+        return JSONResponse(content={})
 
 
 @account_router.post("/register/", summary="Register a new User", name="register")
@@ -44,36 +47,46 @@ async def register_user(
     """Register a new user and handle image upload if provided."""
     user_schema: Optional[UserRegistrationSchema] = None
 
-    if is_template:
-        # Handle form data
-        form = await request.form()
-        user_schema = UserRegistrationSchema(
-            username=form.get("username"),
-            email=form.get("email"),
-            password=form.get("password"),
-            first_name=form.get("first_name"),
-            last_name=form.get("last_name"),
-            uploaded_image=form.get("uploaded_image"),
-        )
-    else:
-        # Handle JSON data
-        user_schema = UserRegistrationSchema(**await request.json())
-
-    if not user_schema:
-        raise HTTPException(status_code=400, detail="Invalid registration data")
-
     try:
+        if is_template:
+            # Handle form data
+            form = await request.form()
+            user_schema = UserRegistrationSchema(
+                username=form.get("username"),  # type: ignore
+                email=form.get("email"),  # type: ignore
+                password=form.get("password"),  # type: ignore
+                first_name=form.get("first_name"),  # type: ignore
+                last_name=form.get("last_name"),  # type: ignore
+                uploaded_image=form.get("uploaded_image"),  # type: ignore
+            )
+        else:
+            # Handle JSON data
+            user_schema = UserRegistrationSchema(**await request.json())
+
+        if not user_schema:
+            raise HTTPException(status_code=400, detail="Invalid registration data")
+
         # Check if the user already exists
-        if await get_user_by_login_identifier(
+        existing_user_by_email = await get_user_by_login_identifier(
             db_session=db_session, login_identifier=user_schema.email
-        ) or await get_user_by_login_identifier(
+        )
+        existing_user_by_username = await get_user_by_login_identifier(
             db_session=db_session,
             login_identifier=user_schema.username,
-        ):
-            raise HTTPException(
-                status_code=status.HTTP_409_CONFLICT,
-                detail="User with provided credentials already exists",
-            )
+        )
+        if existing_user_by_email or existing_user_by_username:
+            if is_template:
+                raise HTTPException(
+                    status_code=status.HTTP_409_CONFLICT,
+                    detail="User with provided credentials already exists",
+                )
+            else:
+                return JSONResponse(
+                    content={
+                        "status_code": status.HTTP_409_CONFLICT,
+                        "detail": "User with provided credentials already exists",
+                    },
+                )
 
         # Create a new user
         user: User = await create_user(db_session=db_session, user_schema=user_schema)
@@ -86,9 +99,17 @@ async def register_user(
             )
 
         # Redirect to login page
-        return RedirectResponse(
-            url=request.url_for("sign_in"), status_code=status.HTTP_302_FOUND
-        )
+        if is_template:
+            return RedirectResponse(
+                url=request.url_for("sign_in"), status_code=status.HTTP_302_FOUND
+            )
+        else:
+            return JSONResponse(
+                content={
+                    "status_code": status.HTTP_201_CREATED,
+                    "detail": "User Created Successfully",
+                }
+            )
 
     except HTTPException as http_exc:
         raise http_exc  # Re-raise known HTTP exceptions

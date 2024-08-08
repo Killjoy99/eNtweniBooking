@@ -1,8 +1,11 @@
 import asyncio
 
 from kivy.core.window import Window
+from kivy.lang import Builder
 from kivymd.app import MDApp
 from uix.root import Root
+
+Builder.load_file("uix/kv/components/organisation_tile.kv")
 
 # Resize the window to mimic the android screen size
 Window.size = (400, 840)
@@ -27,7 +30,7 @@ class EntweniBooking(MDApp):
 
     def build(self):
         self.root = Root()
-        self.root.push("welcome")
+        self.root.push("home")
 
     def health_check(self):
         # Callbacke for user registration connecting to the backend

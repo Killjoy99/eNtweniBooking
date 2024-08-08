@@ -1,2 +1,0 @@
-uvicorn
-fastapi_offline #for testing purposes

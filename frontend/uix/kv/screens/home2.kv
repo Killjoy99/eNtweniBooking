@@ -1,0 +1,97 @@
+<HomeScreen>
+    name: "home"
+    md_bg_color: app.theme_cls.backgroundColor
+
+    MDTopAppBar:
+        id: topbar
+        type: "small"
+        pos_hint: {'top': 1}
+
+        MDTopAppBarLeadingButtonContainer:
+
+            MDActionTopAppBarButton:
+                icon: "menu"
+                # theme_icon_color: "Custom"
+                # icon_color: 0, 1, 0, 1
+                # on_release:
+                #     root.manager.back()
+
+        MDTopAppBarTitle:
+            text: "eNtweniBooking"
+
+        MDTopAppBarTrailingButtonContainer:
+            MDActionTopAppBarButton:
+                icon: "magnify"
+                theme_icon_color: "Custom"
+                icon_color: 0, 1, 0, 1
+                # on_release: app.menu.open()
+
+    MDLabel:
+        markup: True
+        y: root.height - self.height - topbar.height
+        text: "[size=18sp][b]TOP PICKS[/b][/size]"
+
+    MDSwiper:
+        size_hint_y: None
+        height: (root.height - topbar.height) /2
+        y: root.height - self.height - topbar.height
+
+        MySwiper:
+        MySwiper:
+        MySwiper:
+        MySwiper:
+        MySwiper:
+        MySwiper:
+        MySwiper:
+        MySwiper:
+        MySwiper:
+
+    MDSwiper:
+        size_hint_y: None
+        height: (root.height - topbar.height) /2
+        # y: root.height - self.height - topbar.height
+
+        MySwiper:
+        MySwiper:
+        MySwiper:
+        MySwiper:
+        MySwiper:
+        MySwiper:
+        MySwiper:
+        MySwiper:
+        MySwiper:
+
+<MySwiper@MDSwiperItem>
+
+    MDSmartTile:
+        size_hint_y: None
+        height: dp(320)
+        overlap: False
+
+        MDSmartTileImage:
+            id: image
+            source: "data/images/hotel/hotel.png"
+            radius: [dp(16), dp(16), 0, 0]
+
+        MDSmartTileOverlayContainer:
+            md_bg_color: 0, 0, 0, .5
+            adaptive_height: True
+            padding: "8dp"
+            spacing: "8dp"
+            radius: [0, 0, dp(16), dp(16)]
+
+            MDIconButton:
+                icon: "heart-outline"
+                theme_icon_color: "Custom"
+                icon_color: 1, 0, 0, 1
+                pos_hint: {"center_y": .5}
+                on_release:
+                    self.icon = "heart" \
+                    if self.icon == "heart-outline" else \
+                    "heart-outline"
+
+            MDLabel:
+                markup: True
+                text: "[size=18sp][b]Holiday Inn [color=#ffff00]$300[/color][/b][/size]"
+                theme_text_color: "Custom"
+                text_color: "white"

@@ -5,96 +5,95 @@
 
     MDCard:
         orientation: 'vertical'
-        # md_bg_color: root.theme_cls.backgroundColor
+        md_bg_color: root.theme_cls.backgroundColor
         style: "outlined"
         pos_hint: {"center_x": .5, "center_y": .5}
         size_hint: .8, .8
-        spacing: 10
         padding: 0,0,0,dp(20)
+
+        FitImage:
+            source: "data/images/logo.png"
+            size_hint: None, None
+            width: 200
+            height: 200
+            pos_hint: {"center_x": 0.5, "top": 1}
 
         MDBoxLayout:
             orientation: 'vertical'
+            spacing: 10
+            size_hint_x: .9
+            pos_hint: {'center_x': 0.5}
+            padding: 0,0,0,dp(20)
 
-            # FitImage:
-            #     source: "data/images/logo.png"
-            #     pos_hint: {"center_x": 0.5}
+            MDTextField:
+                id: username
+                allow_copy: True
+                on_text_validate: email.focus = True
 
-            MDBoxLayout:
-                orientation: 'vertical'
-                spacing: 10
-                size_hint_x: .9
+                MDTextFieldLeadingIcon:
+                    icon: "account"
+
+                MDTextFieldHintText:
+                    text: "Username"
+
+            MDTextField:
+                id: email
+                allow_copy: True
+                on_text_validate: first_name.focus = True
+
+                MDTextFieldLeadingIcon:
+                    icon: "account"
+
+                MDTextFieldHintText:
+                    text: "Email"
+
+            MDTextField:
+                id: first_name
+                allow_copy: True
+                on_text_validate: last_name.focus = True
+
+                MDTextFieldLeadingIcon:
+                    icon: "account"
+
+                MDTextFieldHintText:
+                    text: "First Name"
+
+            MDTextField:
+                id: last_name
+                allow_copy: True
+                on_text_validate: password.focus = True
+
+                MDTextFieldLeadingIcon:
+                    icon: "account"
+
+                MDTextFieldHintText:
+                    text: "Username"
+
+            MDTextField:
+                id: password
                 pos_hint: {'center_x': 0.5}
-                padding: 0,0,0,dp(20)
+                allow_copy: False
+                password: True
+                on_text_validate: password_confirm.focus = True
 
-                MDTextField:
-                    id: username
-                    allow_copy: True
-                    on_text_validate: email.focus = True
+                MDTextFieldLeadingIcon:
+                    icon: "account"
 
-                    MDTextFieldLeadingIcon:
-                        icon: "account"
+                MDTextFieldHintText:
+                    text: "Password"
 
-                    MDTextFieldHintText:
-                        text: "Username"
+            MDTextField:
+                id: password_confirm
+                pos_hint: {'center_x': 0.5}
+                allow_copy: False
+                password: True
+                on_text_validate: register.focus = True
 
-                MDTextField:
-                    id: email
-                    allow_copy: True
-                    on_text_validate: first_name.focus = True
+                MDTextFieldLeadingIcon:
+                    icon: "account"
 
-                    MDTextFieldLeadingIcon:
-                        icon: "account"
-
-                    MDTextFieldHintText:
-                        text: "Email"
-
-                MDTextField:
-                    id: first_name
-                    allow_copy: True
-                    on_text_validate: last_name.focus = True
-
-                    MDTextFieldLeadingIcon:
-                        icon: "account"
-
-                    MDTextFieldHintText:
-                        text: "First Name"
-
-                MDTextField:
-                    id: last_name
-                    allow_copy: True
-                    on_text_validate: password.focus = True
-
-                    MDTextFieldLeadingIcon:
-                        icon: "account"
-
-                    MDTextFieldHintText:
-                        text: "Username"
-
-                MDTextField:
-                    id: password
-                    pos_hint: {'center_x': 0.5}
-                    allow_copy: False
-                    password: True
-                    on_text_validate: password_confirm.focus = True
-
-                    MDTextFieldLeadingIcon:
-                        icon: "account"
-
-                    MDTextFieldHintText:
-                        text: "Password"
-
-                MDTextField:
-                    id: password_confirm
-                    pos_hint: {'center_x': 0.5}
-                    allow_copy: False
-                    password: True
-                    on_text_validate: register.focus = True
-
-                    MDTextFieldLeadingIcon:
-                        icon: "account"
-
-                    MDTextFieldHintText:
-                        text: "Password"
+                MDTextFieldHintText:
+                    text: "Password"
 
         MDButton:
             id: register

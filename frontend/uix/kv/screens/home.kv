@@ -1,16 +1,136 @@
 <HomeScreen>
-# MDScreen:
-    # on_enter: root.add_organisations()
-    md_bg_color: root.theme_cls.backgroundColor
+    name: "home"
+    md_bg_color: app.theme_cls.backgroundColor
 
-    MDLabel:
-        adaptive_size: True
-        active: False
-        markup: True
-        text: "[size=20sp][color=#ff0000]No Registered Service Providers.[/color][/size]"
-        pos_hint: {'center_x': .5, "center_y": .5}
+    MDTopAppBar:
+        id: topbar
+        type: "small"
+        pos_hint: {'top': 1}
 
-    MDList:
-        id: organisation_list
-        pos_hint: {'center_x': 0.5,'top': 1.0}
-        spacing: 10
+        MDTopAppBarLeadingButtonContainer:
+
+            MDActionTopAppBarButton:
+                icon: "menu"
+                # theme_icon_color: "Custom"
+                # icon_color: 0, 1, 0, 1
+                # on_release:
+                #     root.manager.back()
+
+        MDTopAppBarTitle:
+            text: "eNtweni"
+
+        MDTopAppBarTrailingButtonContainer:
+            MDActionTopAppBarButton:
+                icon: "logout"
+                # theme_icon_color: "Custom"
+                # icon_color: 0, 1, 0, 1
+                on_release: root.manager.push_replacement("welcome")
+
+    MDScreenManager:
+        id: home_screen_manager
+        y: root.height - self.height - topbar.height
+
+        MDScreen:
+            name: "Home"
+            pos_hint: {'center_x': 0.5,'top': 1.0}
+
+            MDBoxLayout:
+                orientation: 'vertical'
+                MDLabel:
+                    pos_hint: {'center_x': 0.5,'top':1}
+                    text: 'HOTELS'
+
+                MDSwiper:
+                    size_hint_y: None
+                    height: root.height /2 - dp(40)
+                    pos_hint: {'center_x': 0.5,'top': 1.0}
+
+                    MySwiper:
+                    MySwiper:
+                    MySwiper:
+                    MySwiper:
+
+                MDLabel:
+                    pos_hint: {'center_x': 0.5,'center_y': 0.5}
+                    text: 'TOP PICKS'
+
+                MDSwiper:
+                    size_hint_y: None
+                    height: root.height /2 - dp(40)
+                    pos_hint: {'center_x': 0.5,'center_y': 0.5}
+
+                    MySwiper:
+                    MySwiper:
+                    MySwiper:
+                    MySwiper:
+
+        MDScreen:
+            name: "Booking"
+
+            MDLabel:
+                pos_hint: {'center_x': 0.5,'center_y': 0.5}
+                text: 'Booking Screen'
+
+        MDScreen:
+            name: "Ride"
+
+            MDLabel:
+                pos_hint: {'center_x': 0.5,'center_y': 0.5}
+                text: 'Ride Hailing Screen'
+
+    MDNavigationBar:
+        type: 'small'
+        on_switch_tabs: root.on_switch_tabs(*args)
+
+        MDNavigationItem:
+            MDNavigationItemIcon:
+                icon: 'gmail'
+            MDNavigationItemLabel:
+                text: 'Home'
+
+        MDNavigationItem:
+            MDNavigationItemIcon:
+                icon: 'hospital-building'
+            MDNavigationItemLabel:
+                text: 'Booking'
+
+        MDNavigationItem:
+            MDNavigationItemIcon:
+                icon: 'car-connected'
+            MDNavigationItemLabel:
+                text: 'Ride'
+
+<MySwiper@MDSwiperItem>
+
+    MDSmartTile:
+        size_hint_y: None
+        height: dp(320)
+        overlap: False
+
+        MDSmartTileImage:
+            id: image
+            source: "data/images/hotel/hotel.png"
+            radius: [dp(16), dp(16), 0, 0]
+
+        MDSmartTileOverlayContainer:
+            md_bg_color: 0, 0, 0, .5
+            adaptive_height: True
+            padding: "8dp"
+            spacing: "8dp"
+            radius: [0, 0, dp(16), dp(16)]
+
+            MDIconButton:
+                icon: "heart-outline"
+                theme_icon_color: "Custom"
+                icon_color: 1, 0, 0, 1
+                pos_hint: {"center_y": .5}
+                on_release:
+                    self.icon = "heart" \
+                    if self.icon == "heart-outline" else \
+                    "heart-outline"
+
+            MDLabel:
+                markup: True
+                text: "[size=18sp][b]Holiday Inn [color=#ffff00]$300[/color][/b][/size]"
+                theme_text_color: "Custom"
+                text_color: "white"

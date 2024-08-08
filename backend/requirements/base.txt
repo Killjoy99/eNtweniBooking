@@ -1,8 +1,0 @@
-fastapi
-sqlalchemy
-pydantic
-jwt
-fastapi_limiter
-sqladmin
-passlib
-fastapi_offline #for testing purposes

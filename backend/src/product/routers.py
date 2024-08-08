@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, Request
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.core.decorators import check_accept_header, render_template
+from src.core.utils import check_accept_header
 from src.database.core import get_async_db
 
 from .models import Product
@@ -13,7 +13,6 @@ product_router = APIRouter(prefix="/products", tags=["Products"])
 
 
 @product_router.get("", name="read_products")
-@render_template(template_name="product/list.html")
 async def get_products(
     request: Request,
     is_template: Optional[bool] = Depends(check_accept_header),
