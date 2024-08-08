@@ -16,6 +16,8 @@ from .utils import generate_secure_password, get_hashed_password, verify_passwor
 
 logger = logging.getLogger(__name__)
 
+# TODO: Re-implement jwt, module has changed (Breaking change)
+
 
 # Authenticate a user based on username/email and password
 async def authenticate_user(

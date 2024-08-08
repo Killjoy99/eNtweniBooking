@@ -381,6 +381,18 @@ The backend server will be deployed using `Nginx Unit`, an Nginx server built to
 4. Create OAuth2.0 Credentials
 5. Retrieve Client ID and Secret
 
+## `CREATING KEYS`
+
+```sh
+# Generate a 2048-bit RSA private key
+openssl genpkey -algorithm RSA -out private_key.pem -pkeyopt rsa_keygen_bits:2048
+
+# Extract the public key
+openssl rsa -pubout -in private_key.pem -out public_key.pem
+
+```
+
+
 ## `EntweniSDK`
 
 In the frontend a folder for generating methods to call the backend has the code to generate the frontend api, We named the folder entweni_openapi_sdk for covenience.

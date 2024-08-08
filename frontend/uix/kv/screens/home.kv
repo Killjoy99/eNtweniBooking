@@ -36,33 +36,23 @@
 
             MDBoxLayout:
                 orientation: 'vertical'
-                MDLabel:
-                    pos_hint: {'center_x': 0.5,'top':1}
-                    text: 'HOTELS'
 
-                MDSwiper:
+                MDBoxLayout:
+                    orientation: 'vertical'
                     size_hint_y: None
-                    height: root.height /2 - dp(40)
-                    pos_hint: {'center_x': 0.5,'top': 1.0}
+                    height: root.height /2
 
-                    MySwiper:
-                    MySwiper:
-                    MySwiper:
-                    MySwiper:
+                    MDLabel:
+                        id: top_label
+                        pos_hint: {'center_x': 0.5,'top':1}
+                        text: 'HOTELS'
+                        adaptive_height: True
 
-                MDLabel:
-                    pos_hint: {'center_x': 0.5,'center_y': 0.5}
-                    text: 'TOP PICKS'
-
-                MDSwiper:
-                    size_hint_y: None
-                    height: root.height /2 - dp(40)
-                    pos_hint: {'center_x': 0.5,'center_y': 0.5}
-
-                    MySwiper:
-                    MySwiper:
-                    MySwiper:
-                    MySwiper:
+                    MDSwiper:
+                        id: hotels
+                        # size_hint_y: None
+                        # height: root.height /2 - dp(40)
+                        # y: root.height - top_label.height
 
         MDScreen:
             name: "Booking"

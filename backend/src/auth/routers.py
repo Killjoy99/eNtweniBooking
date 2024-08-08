@@ -34,6 +34,8 @@ from .services import (
 )
 from .utils import create_access_token, create_refresh_token, set_cookies_and_json
 
+# TODO: Re-implement jwt, module has changed (Breaking change)
+
 logger = logging.getLogger(__name__)
 
 auth_router = APIRouter(tags=["Authentication"])

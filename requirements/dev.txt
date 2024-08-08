@@ -4,7 +4,11 @@ plyer
 pydantic
 pydantic-settings
 fastapi
-asyncpg
 boto3
-jwt
+PyJWT
 httpx
+pyinstrument
+email-validator
+aiofiles
+redis
+aioredis

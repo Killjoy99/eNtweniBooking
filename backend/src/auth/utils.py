@@ -1,7 +1,6 @@
-import datetime
 import secrets
 import string
-from datetime import timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any, Dict
 
 import jwt
@@ -15,13 +14,13 @@ password_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 async def create_access_token(
     login_identifier: str | Any,
-    expires_delta: float = 0.0,
+    expires_delta: int = None,
     user_data: dict = {},
 ) -> str:
     if expires_delta is not None:
-        expires_delta = datetime.datetime.now(datetime.UTC) + timedelta(expires_delta)  # type: ignore
+        expires_delta = datetime.now(timezone.utc) + timedelta(expires_delta)  # type: ignore
     else:
-        expires_delta = datetime.datetime.now(datetime.UTC) + timedelta(
+        expires_delta = datetime.now(timezone.utc) + timedelta(
             minutes=auth_settings.ACCESS_TOKEN_EXPIRE_MINUTES
         )
 
@@ -61,11 +60,9 @@ async def create_refresh_token(
     login_identifier: str | Any, expires_delta: float = 0.0, user_data: dict = {}
 ) -> str:
     if expires_delta is not None:
-        expires_delta = datetime.datetime.now(datetime.UTC) + timedelta(
-            minutes=expires_delta
-        )  # type: ignore
+        expires_delta = datetime.now(timezone.utc) + timedelta(minutes=expires_delta)  # type: ignore
     else:
-        expires_delta = datetime.datetime.now(datetime.UTC) + timedelta(
+        expires_delta = datetime.now(timezone.utc) + timedelta(
             minutes=auth_settings.REFRESH_TOKEN_EXPIRE_MINUTES
         )
 

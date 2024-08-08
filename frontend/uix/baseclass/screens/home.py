@@ -1,21 +1,24 @@
 import asyncio
 
 from applibs.connection_manager import EntweniSDKClient
-from kivymd.uix.label import MDLabel
-from kivymd.uix.navigationbar import MDNavigationBar, MDNavigationItem
 
-# from kivymd.uix.label import MDLabel
+# from kivy.lang import Builder
+from kivy.properties import ObjectProperty
+from kivymd.uix.navigationbar import MDNavigationBar, MDNavigationItem
 from kivymd.uix.screen import MDScreen
 
-from ..components.components import OrganisationTile
+# from kivymd.uix.swiper import MDSwiperItem
+
+# Loda kv files TODO: Later optimise for lazy loading
+# Builder.load_file("uix/kv/components/organisation_tile.kv")
 
 
 class HomeScreen(MDScreen):
+    all_organisations = ObjectProperty([])
+
     def on_pre_enter(self):
         self.client = EntweniSDKClient()
         self.stop_fetching = False
-
-    def on_enter(self):
         self.get_organisations()
 
     def get_organisations(self, *args, **kwargs):
@@ -25,20 +28,9 @@ class HomeScreen(MDScreen):
         while not self.stop_fetching:
             try:
                 response = await self.client.organisations_organisations_get()
-                organisations = response.get("organisations", [])
+                organisations = response.get("organisations")
 
-                if organisations:
-                    # self.ids.organisation_list.clear_widgets()  # Clear existing widgets
-                    for organisation in organisations:
-                        self.ids.organisation_list.add_widget(OrganisationTile())
-                else:
-                    self.add_widget(
-                        MDLabel(
-                            text="[size=20sp][color=#ff0000]No Registered Service Providers Yet[/color][/size]",
-                            markup=True,
-                            pos_hint={"center_x": 0.5, "center_y": 0.5},
-                        )
-                    )
+                return organisations
 
             except Exception as e:
                 print(f"Error fetching organisations: {e}")

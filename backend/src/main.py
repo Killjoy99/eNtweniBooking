@@ -46,7 +46,7 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI(openapi_url="")
 
-app.add_middleware(PyInstrumentMiddleware)
+# app.add_middleware(PyInstrumentMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000"],  # Adjust according to your needs
