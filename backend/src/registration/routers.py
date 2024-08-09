@@ -6,7 +6,8 @@ from auth.services import get_user_by_login_identifier
 from core.utils import check_accept_header, templates
 from database.core import get_async_db
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request, status
-from fastapi.responses import JSONResponse, RedirectResponse
+from fastapi.responses import JSONResponse
+from fastapi_limiter.depends import RateLimiter
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from .schemas import UserRegistrationSchema
@@ -36,7 +37,12 @@ async def register(
         return JSONResponse(content={})
 
 
-@account_router.post("/register/", summary="Register a new User", name="register")
+@account_router.post(
+    "/register/",
+    summary="Register a new User",
+    name="register",
+    dependencies=[Depends(RateLimiter(times=5, seconds=60))],
+)
 async def register_user(
     request: Request,
     background_tasks: BackgroundTasks,
@@ -44,8 +50,6 @@ async def register_user(
     db_session: AsyncSession = Depends(get_async_db),
 ):
     """Register a new user and handle image upload if provided."""
-    user_schema: Optional[UserRegistrationSchema] = None
-
     try:
         if is_template:
             # Handle form data
@@ -62,8 +66,8 @@ async def register_user(
             # Handle JSON data
             user_schema = UserRegistrationSchema(**await request.json())
 
-        if not user_schema:
-            raise HTTPException(status_code=400, detail="Invalid registration data")
+        # Logging for server side events
+        logger.info(f"User registration attempted, USERNAME: {user_schema.username}")
 
         # Check if the user already exists
         existing_user_by_email = await get_user_by_login_identifier(
@@ -73,17 +77,24 @@ async def register_user(
             db_session=db_session,
             login_identifier=user_schema.username,
         )
+
         if existing_user_by_email or existing_user_by_username:
+            error_message = "User with provided Username / Email already exists"
             if is_template:
-                raise HTTPException(
+                return templates.TemplateResponse(
+                    "auth/signup.html",
+                    {
+                        "request": request,
+                        "error_message": error_message,
+                        "data": user_schema.model_dump(),
+                    },
                     status_code=status.HTTP_409_CONFLICT,
-                    detail="User with provided credentials already exists",
                 )
             else:
                 return JSONResponse(
                     content={
                         "status_code": status.HTTP_409_CONFLICT,
-                        "detail": "User with provided credentials already exists",
+                        "detail": error_message,
                     },
                 )
 
@@ -97,21 +108,29 @@ async def register_user(
                 image_saver.save_user_image, user, user_schema.uploaded_image
             )
 
-        # Redirect to login page
+        # Success message
+        success_message = "Registration successful. Please log in."
+
         if is_template:
-            return RedirectResponse(
-                url=request.url_for("sign_in"), status_code=status.HTTP_302_FOUND
+            return templates.TemplateResponse(
+                "auth/login.html",
+                {
+                    "request": request,
+                    "success_message": success_message,
+                    "data": user_schema.model_dump(),
+                },
+                status_code=status.HTTP_201_CREATED,
             )
         else:
             return JSONResponse(
                 content={
                     "status_code": status.HTTP_201_CREATED,
-                    "detail": "User Created Successfully",
+                    "detail": success_message,
                 }
             )
 
     except HTTPException as http_exc:
         raise http_exc  # Re-raise known HTTP exceptions
     except Exception as e:
-        logger.error(f"Error during user registration: {e}")
+        logger.error(f"Error during user registration: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail="Internal server error")

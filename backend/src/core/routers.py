@@ -1,6 +1,7 @@
 import logging
 from typing import Optional
 
+# from auth.services import get_current_user
 from auth.utils import decode_access_token, decode_refresh_token
 from database.core import get_async_db
 from fastapi import APIRouter, Depends, Request, Response
@@ -14,7 +15,7 @@ logger = logging.getLogger(__name__)
 home_router = APIRouter(tags=["Home"])
 
 
-@home_router.get("/home", name="home")
+@home_router.get("/home", name="home")  # , dependencies=[Depends(get_current_user)])
 async def home(
     request: Request,
     response: Response,
@@ -48,7 +49,7 @@ async def home(
         return templates.TemplateResponse(
             request=request,
             name="home.html",
-            context={"user_info": user_info, "error_message": error_message},
+            context={"user_info": user_info, "data": {}},
         )
 
     else:

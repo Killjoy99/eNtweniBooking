@@ -8,24 +8,26 @@ eNtweni Booking - Sign Up
 <div class="container d-flex justify-content-center align-items-center" style="height: 100vh;">
     <div class="card" style="width: 100%; max-width: 400px;">
         <div class="card-body">
+            {% if error_message %}
+                <p style="color:red;">{{ error_message }}</p>
+            {% endif %}
             <h2 class="card-title text-center">Create an Account</h2>
-            <form action="{{ url_for('register') }}" method="post">
-                {{ data.error }}
+            <form method="post" action="{{ url_for('register') }}" enctype="multipart/form-data">
                 <div class="mb-3">
                     <label for="username" class="form-label">Username</label>
-                    <input type="text" class="form-control" id="username" name="username" placeholder="Enter your username" required>
+                    <input type="text" class="form-control" id="username" name="username" placeholder="Enter your username" value="{{ data.username }}" required>
                 </div>
                 <div class="mb-3">
                     <label for="email" class="form-label">Email address</label>
-                    <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
+                    <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" value="{{ data.email }}"  required>
                 </div>
                 <div class="mb-3">
                     <label for="first_name" class="form-label">Firstname</label>
-                    <input type="text" class="form-control" id="first_name" name="first_name" placeholder="Enter your first name" required>
+                    <input type="text" class="form-control" id="first_name" name="first_name" placeholder="Enter your first name" value="{{ data.first_name }}"  required>
                 </div>
                 <div class="mb-3">
                     <label for="last_name" class="form-label">Lastname</label>
-                    <input type="text" class="form-control" id="last_name" name="last_name" placeholder="Enter your last name" required>
+                    <input type="text" class="form-control" id="last_name" name="last_name" placeholder="Enter your last name" value="{{ data.last_name }}"  required>
                 </div>
                 <div class="mb-3">
                     <label for="password" class="form-label">Password</label>

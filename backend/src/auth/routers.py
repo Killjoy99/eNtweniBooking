@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Annotated, Optional
 
 import jwt
@@ -16,11 +16,11 @@ from fastapi import (
     status,
 )
 from fastapi.responses import JSONResponse, RedirectResponse
+from fastapi_limiter.depends import RateLimiter
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from .config import auth_settings
-from .models import User
 from .schemas import UserLoginSchema
 from .services import (
     authenticate_user,
@@ -62,12 +62,17 @@ def login_page(
 ):
     """Render the login page."""
     if is_template:
-        return templates.TemplateResponse("auth/login.html", {"request": request})
+        return templates.TemplateResponse(
+            "auth/login.html", {"request": request, "data": {}}
+        )
     return JSONResponse(status_code=status.HTTP_200_OK, content={})
 
 
 @auth_router.post(
-    "/login/", summary="Create access and refresh tokens for user", name="login"
+    "/login/",
+    summary="Create access and refresh tokens for user",
+    name="login",
+    dependencies=[Depends(RateLimiter(times=5, seconds=60))],
 )
 async def login(
     request: Request,
@@ -77,8 +82,7 @@ async def login(
     is_template: Optional[bool] = Depends(check_accept_header),
 ):
     """Authenticate user and create access and refresh tokens."""
-    login_schema: Optional[UserLoginSchema] = None
-
+    login_schema = None
     if is_template:
         form = await request.form()
         login_schema = UserLoginSchema(
@@ -87,15 +91,6 @@ async def login(
         )
     else:
         data = await request.json()
-        # if "cookies" in data:
-        #     cookie_tokens = data["cookies"]
-        #     print(cookie_tokens)
-
-        #     try:
-        #         # decode the cookie accordingly (refresh / ACCESS)
-        #         cookie_data = decode_access_token(cookie_tokens)
-        #         login_identifier = cookie_data.get("sub")
-
         login_schema = UserLoginSchema(**data)
 
     if not login_schema:
@@ -104,23 +99,27 @@ async def login(
         )
 
     try:
-        user: Optional[User] = await authenticate_user(
+        user = await authenticate_user(
             db_session=db_session,
             login_identifier=login_schema.login_identifier,
             password=login_schema.password,
         )
 
         if not user:
-            error_message = "Incorrect email/user or password"
+            error_message = "Incorrect Username or Password"
             if is_template:
-                return RedirectResponse(
-                    request.url_for("sign_in"), status_code=status.HTTP_302_FOUND
+                return templates.TemplateResponse(
+                    "auth/login.html",
+                    {
+                        "request": request,
+                        "error_message": error_message,
+                        "data": login_schema.model_dump(),
+                    },
+                    status_code=status.HTTP_400_BAD_REQUEST,
                 )
             return JSONResponse(
-                content={
-                    "status_code": status.HTTP_400_BAD_REQUEST,
-                    "detail": error_message,
-                }
+                content={"detail": error_message},
+                status_code=status.HTTP_400_BAD_REQUEST,
             )
 
         access_token = await create_access_token(
@@ -141,23 +140,38 @@ async def login(
                 "image": user.user_image,
             },
         )
-        # log access tokens
-        logger.info(access_token)
-        cookies = await set_cookies_and_json(response, access_token, refresh_token)
+
+        # Debugging cookies
+        logger.debug(f"Setting access_token cookie: {access_token}")
+        logger.debug(f"Setting refresh_token cookie: {refresh_token}")
+
+        response.set_cookie(
+            key="access_token",
+            value=access_token,
+            httponly=True,
+            samesite="lax",  # Adjust as needed
+            secure=False,  # Adjust for production
+        )
+        response.set_cookie(
+            key="refresh_token",
+            value=refresh_token,
+            httponly=True,
+            samesite="lax",  # Adjust as needed
+            secure=False,  # Adjust for production
+        )
+
         background_tasks.add_task(update_user_last_login, db_session, user=user)
 
         if is_template:
             return RedirectResponse(
-                url=request.url_for("home"),
-                status_code=status.HTTP_302_FOUND,
+                url=request.url_for("home"), status_code=status.HTTP_302_FOUND
             )
         else:
             return JSONResponse(
                 content={
                     "status_code": status.HTTP_202_ACCEPTED,
                     "detail": "LOGIN_SUCCESS",
-                    "cookies": cookies,
-                },
+                }
             )
 
     except Exception as e:
@@ -297,11 +311,11 @@ async def get_new_access_token_from_refresh_token(
 async def logout(
     request: Request,
     response: Response,
-    current_user: User = Depends(get_current_user),
+    current_user: UserLoginSchema = Depends(get_current_user),
     is_template: Optional[bool] = Depends(check_accept_header),
 ):
     """Logout the user by removing http-only cookies."""
-    expires = datetime.utcnow() + timedelta(seconds=1)
+    expires = datetime.now(timezone.utc) + timedelta(seconds=1)
     response.set_cookie(
         key="access_token",
         value="",

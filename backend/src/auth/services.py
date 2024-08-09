@@ -1,6 +1,6 @@
 import asyncio
 import logging
-from typing import Annotated, Optional
+from typing import Optional
 
 import jwt  # PyJWT
 from database.core import get_async_db
@@ -155,9 +155,16 @@ async def update_user_last_login(db_session: AsyncSession, *, user: User) -> Non
 
 
 async def get_current_user(
-    access_token: Annotated[str, Cookie()],
+    access_token: Optional[str] = Cookie(None),
     db_session: AsyncSession = Depends(get_async_db),
 ) -> User:
+    if not access_token:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Access token is missing",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
     try:
         payload = jwt.decode(
             access_token,

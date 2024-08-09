@@ -1,16 +1,83 @@
 {% extends 'base.html' %}
-<title>{% block title %}eNtweni Booking - Welcome{% endblock %}</title>
+<title>{% block title %}eNtweni - Services{% endblock %}</title>
+
 {% block content %}
-    
-    <div class="welcome-container">
-        <h1 class="welcome-title">{{ "eNtweniBooking" }}</h1>
-        <p class="welcome-message">Book your dream Vaccation with ease. <b>Ngen' eNtweni</b></p>
-        
-        <div class="buttons">
-            <a href="{{ url_for('sign_in') }}" class="btn btn-primary">Get Started</a>
-            <a href="{{ url_for('home') }}" class="btn">Book Now</a>
-            <a href="/about" class="btn">More</a>
-            <a href="/api/v1/docs" class="btn">API</a>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Entweni</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="#">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#services">Services</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#about">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contact">Contact</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <h1>Welcome to Entweni</h1>
+        <p>Your gateway to seamless booking, school management, and more.</p>
+        <a href="{{ url_for('sign_in') }}" class="btn btn-primary btn-lg">Get Started</a>
+        <a href="#services" class="btn btn-primary btn-lg">Explore Our Services</a>
+        <a href="/api/v1/docs" class="btn btn-primary btn-lg">Our API</a>
+    </div>
+
+    <!-- Services Section -->
+    <div id="services" class="services-section container">
+        <div class="text-center mb-5">
+            <h2>Our Services</h2>
+            <p>We offer a comprehensive list of Software Solutions to meet your needs both Individual and <a href="#" class="btn btn-primary btn-sm">Organisations</a></p>
+        </div>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card service-card">
+                    <div class="card-body text-center">
+                        <div class="service-icon mb-3">
+                            <i class="bi bi-calendar-check"></i>
+                        </div>
+                        <h5 class="card-title">Booking</h5>
+                        <p class="card-text">Seamless booking services for hotels, BnBs, and car rentals.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card service-card">
+                    <div class="card-body text-center">
+                        <div class="service-icon mb-3">
+                            <i class="bi bi-book"></i>
+                        </div>
+                        <h5 class="card-title">School Management</h5>
+                        <p class="card-text">Comprehensive school management tools to enhance learning.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card service-card">
+                    <div class="card-body text-center">
+                        <div class="service-icon mb-3">
+                            <i class="bi bi-briefcase"></i>
+                        </div>
+                        <h5 class="card-title">More Services</h5>
+                        <p class="card-text">Explore our additional services tailored to your needs.</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 {% endblock %}

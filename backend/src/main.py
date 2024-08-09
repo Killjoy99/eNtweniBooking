@@ -1,6 +1,7 @@
 import logging
 from os import path
 
+import redis.asyncio as aioredis
 from admin.admin import BookingAdmin, OrganisationAdmin, ProductAdmin, UserAdmin
 from api import api_router
 from core.config import settings
@@ -10,6 +11,7 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
+from fastapi_limiter import FastAPILimiter
 from pyinstrument import Profiler
 from pyinstrument.renderers.html import HTMLRenderer  # noqa: F401
 from sqladmin import Admin
@@ -52,7 +54,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 # Rate limiting
+@app.on_event("startup")
+async def startup():
+    # Load the startup logic
+    redis_limiter = aioredis.from_url(url="redis://localhost:6379")
+    await FastAPILimiter().init(redis=redis_limiter)
+
+
 # app.add_middleware(
 #     FastAPILimiter,
 #     rate_limit="5/minute"        # Adjust according to your needs

@@ -6,15 +6,10 @@
     <meta name="description" content="eNtweni Booking - Your booking solution">
     <meta name="author" content="Your Name or Company">
     <title>{% block title %}eNtweni Booking - Welcome{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', path='css/bootstrap.min.css') }}">
-    <!-- <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}"> -->
+    <link rel="stylesheet" href="{{ url_for('static', path='bootstrap/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}">
 </head>
-<body style="background-color: #def0f0; justify-content: center; align-items: center; display: flex;">
-    <header>
-        <!-- Optional: Add navigation or branding elements here -->
-        <a href="{{ url_for('home') }}"><img src="{{ url_for('static', path='images/entweni-booking.png') }}" alt="eNtweni Booking Logo" class="logo" style="position: fixed; top: 0px; left: 0px; max-width: 200px;"></a>
-    </header>
-    
+<body>
 
     {% block content %}
     {% endblock %}
@@ -22,14 +17,18 @@
     <footer class="footer fixed-bottom">
         <div class="container text-center">
             <span class="text-dark-emphasis">
-                <p>&copy; 2024 eNtweni Booking. All rights reserved.</p>
+                <p>&copy; 2024 eNtweni. All rights reserved.</p>
+                <p>Follow us on:
+                    <a href="https://www.linkedin.com/in/philani-dlamini-8721ab269">LinkedIn</a> |
+                    <a href="https://github.com/Killjoy99">GitHub</a>
+                </p>
             </span>
         </div>
     </footer>
 
     {% block scripts %}
         <!-- Loading the scripts asynchronously -->
-        <script src="{{ url_for('static', path='js/bootstrap.min.js') }}" defer></script>
+        <script src="{{ url_for('static', path='bootstrap/js/bootstrap.min.js') }}" defer></script>
     {% endblock %}
 </body>
 </html>

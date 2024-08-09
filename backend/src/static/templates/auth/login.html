@@ -8,15 +8,21 @@
 <div class="container d-flex justify-content-center align-items-center" style="height: 100vh;">
     <div class="card" style="width: 100%; max-width: 400px;">
         <div class="card-body">
+            {% if error_message %}
+                <p style="color:red;">{{ error_message }}</p>
+            {% endif %}
+            {% if success_message %}
+                <p style="color:green;">{{ success_message }}</p>
+            {% endif %}
             <h2 class="card-title text-center">Login</h2>
             <form action="{{ url_for('login') }}" method="post">
                 <div class="mb-3">
                     <label for="login_identifier" class="form-label">Username</label>
-                    <input type="text" class="form-control" id="login_identifier" name="login_identifier" placeholder="Enter Username / Email" required value="{{ request.query_params.get('username', '') }}">
+                    <input type="text" class="form-control" id="login_identifier" name="login_identifier" placeholder="Enter Username / Email" required value="{{ data.login_identifier }}">
                 </div>
                 <div class="mb-3">
                     <label for="password" class="form-label">Password</label>
-                    <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required value="{{ request.query_params.get('password', '') }}">
+                    <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
                 </div>
                 <div class="d-grid mb-3">
                     <button class="btn btn-primary" type="submit">Login</button>
