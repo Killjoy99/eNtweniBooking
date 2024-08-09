@@ -1,9 +1,8 @@
+from database.core import Base
 from sqlalchemy import Index
 from sqlalchemy.orm import Mapped, mapped_column
 
-from src.database.core import Base
-
-# from src.product.models import Product
+# from product.models import Product
 
 
 class Organisation(Base):

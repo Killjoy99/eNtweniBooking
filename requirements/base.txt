@@ -1,7 +1,7 @@
 fastapi
 sqlalchemy
 pydantic
-jwt
+PyJWT
 fastapi-limiter
 sqladmin
 passlib

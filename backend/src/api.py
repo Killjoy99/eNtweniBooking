@@ -1,14 +1,13 @@
+from auth.routers import auth_router
+from booking.routers import booking_router
+from core.routers import home_router
+from database.core import get_async_db
 from fastapi import APIRouter, Depends, status
 from fastapi.responses import JSONResponse
+from organisation.routers import organisation_router
+from product.routers import product_router
+from registration.routers import account_router
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
-
-from src.auth.routers import auth_router
-from src.booking.routers import booking_router
-from src.core.routers import home_router
-from src.database.core import get_async_db
-from src.organisation.routers import organisation_router
-from src.product.routers import product_router
-from src.registration.routers import account_router
 
 api_router = APIRouter(default_response_class=JSONResponse)
 

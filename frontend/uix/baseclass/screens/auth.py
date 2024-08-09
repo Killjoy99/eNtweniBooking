@@ -50,6 +50,13 @@ class RegisterScreen(MDScreen):
     def on_pre_enter(self):
         self.client = EntweniSDKClient()
 
+    def clear_inputs(self):
+        self.ids.username.text = ""
+        self.ids.email.text = ""
+        self.ids.first_name.text = ""
+        self.ids.last_name.text = ""
+        self.ids.password_confirm.text = ""
+
     def register(
         self,
         username: str,
@@ -110,6 +117,10 @@ class LoginScreen(MDScreen):
         else:
             self.do_remember_me = False
 
+    def clear_inputs(self):
+        self.ids.login_identifier.text = ""
+        self.ids.password.text = ""
+
     def login(self, remember_me: bool, login_identifier: str, password: str):
         asyncio.create_task(
             self.async_login(login_identifier=login_identifier, password=password)
@@ -133,6 +144,7 @@ class LoginScreen(MDScreen):
             # popup an error dialog
             logger.debug(message)
         elif status_code == 202:
+            self.clear_inputs()
             self.manager.push_replacement("home")
         # background get and store the cookies for later reference
 

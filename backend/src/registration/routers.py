@@ -1,14 +1,13 @@
 import logging
 from typing import Optional
 
+from auth.models import User
+from auth.services import get_user_by_login_identifier
+from core.utils import check_accept_header, templates
+from database.core import get_async_db
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request, status
 from fastapi.responses import JSONResponse, RedirectResponse
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from src.auth.models import User
-from src.auth.services import get_user_by_login_identifier
-from src.core.utils import check_accept_header, templates
-from src.database.core import get_async_db
 
 from .schemas import UserRegistrationSchema
 from .services import ImageSaver, create_user

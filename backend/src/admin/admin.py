@@ -1,9 +1,8 @@
+from auth.models import User
+from booking.models import Booking
+from organisation.models import Organisation
+from product.models import Product
 from sqladmin import ModelView
-
-from src.auth.models import User
-from src.booking.models import Booking
-from src.organisation.models import Organisation
-from src.product.models import Product
 
 
 class UserAdmin(ModelView, model=User):

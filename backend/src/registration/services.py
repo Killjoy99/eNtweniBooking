@@ -1,9 +1,8 @@
 import logging
 
+from auth.models import User
+from auth.utils import generate_password_hash
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from src.auth.models import User
-from src.auth.utils import get_hashed_password
 
 from .schemas import UserRegistrationSchema
 
@@ -16,7 +15,7 @@ DEFAULT_CHUNK_SIZE = 1024 * 1024 * 1  # 1 megabyte (1Mb)
 async def create_user(
     db_session: AsyncSession, *, user_schema: UserRegistrationSchema
 ) -> User:
-    hashed_password = await get_hashed_password(user_schema.password)
+    hashed_password = await generate_password_hash(user_schema.password)
     new_user = User(
         username=user_schema.username.lower(),
         email=user_schema.email.lower(),

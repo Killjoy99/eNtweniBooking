@@ -1,6 +1,8 @@
 import logging
 from typing import Optional
 
+from core.utils import check_accept_header, templates
+from database.core import get_async_db
 from fastapi import (
     APIRouter,
     BackgroundTasks,
@@ -11,9 +13,6 @@ from fastapi import (
 )
 from fastapi.responses import RedirectResponse
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from src.core.utils import check_accept_header, templates
-from src.database.core import get_async_db
 
 from .schemas import (
     OrganisationCreateSchema,

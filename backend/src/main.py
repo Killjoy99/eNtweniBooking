@@ -1,21 +1,18 @@
 import logging
 from os import path
 
+from admin.admin import BookingAdmin, OrganisationAdmin, ProductAdmin, UserAdmin
+from api import api_router
+from core.config import settings
+from core.utils import templates
+from database.core import async_engine
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
-from fastapi_offline import FastAPIOffline
 from pyinstrument import Profiler
 from pyinstrument.renderers.html import HTMLRenderer  # noqa: F401
 from sqladmin import Admin
-
-from src.admin.admin import BookingAdmin, OrganisationAdmin, ProductAdmin, UserAdmin
-from src.core.config import settings
-from src.core.utils import templates
-from src.database.core import async_engine
-
-from .api import api_router
 
 
 class PyInstrumentMiddleware:
@@ -62,7 +59,7 @@ app.add_middleware(
 # )
 
 frontend = FastAPI(openapi_url="")
-api = FastAPIOffline(
+api = FastAPI(
     title="eNtweniBooking",
     description="Welcome to eNtweniBooking's API documentation!",
     root_path="/api/v1",
@@ -103,3 +100,9 @@ api.include_router(api_router)
 
 app.mount("/api/v1", app=api)
 app.mount("/", app=frontend)
+
+
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run("main:app", reload=True)

@@ -14,7 +14,9 @@ from kivymd.uix.screen import MDScreen
 
 
 class HomeScreen(MDScreen):
-    all_organisations = ObjectProperty([])
+    def __init__(self, **kwargs):
+        super(HomeScreen, self).__init__(**kwargs)
+        self.all_organisations = ObjectProperty([])
 
     def on_pre_enter(self):
         self.client = EntweniSDKClient()
@@ -48,4 +50,6 @@ class HomeScreen(MDScreen):
         item_icon: str,
         item_text: str,
     ):
+        # Get corresponding screen name from the manager
+        self.current_tab_name = item_text
         self.ids.home_screen_manager.current = item_text

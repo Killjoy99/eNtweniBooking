@@ -1,7 +1,7 @@
 from fastapi import Request
 from fastapi.templating import Jinja2Templates
 
-from src.core.config import settings
+from core.config import settings
 
 templates = Jinja2Templates(directory=settings.TEMPLATE_DIR)
 

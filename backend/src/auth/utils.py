@@ -98,11 +98,11 @@ async def decode_refresh_token(token: str) -> dict:
         )
 
 
-async def get_hashed_password(password: str) -> str:
+async def generate_password_hash(password: str) -> str:
     return password_context.hash(password)
 
 
-async def verify_password(plain_password: str, hashed_password: str) -> bool:
+async def verify_password_hash(plain_password: str, hashed_password: str) -> bool:
     return password_context.verify(plain_password, hashed_password)
 
 

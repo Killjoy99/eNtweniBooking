@@ -1,6 +1,5 @@
+from core.config import settings
 from pydantic import BaseModel, EmailStr
-
-from src.core.config import settings
 
 
 class GoogleLoginSchema(BaseModel):
@@ -34,12 +33,12 @@ class UserLoginResponseSchema(BaseModel):
     user_image: str | None
     # role: List[Roles]
 
-    class Config:
-        from_attribute = True
-
     @classmethod
     def add_image_host(cls, image_url: str | None) -> str | None:
         if image_url:
             if "/static/" in image_url and settings.ENVIRONMENT == "development":
                 return settings.STATIC_HOST + image_url
         return image_url
+
+    class Config:
+        from_attribute = True

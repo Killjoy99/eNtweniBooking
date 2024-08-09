@@ -3,8 +3,11 @@
     "*:80": {
       "pass": "applications/default"
     },
-	"*:8000": {
+	  "*:8001": {
       "pass": "applications/testapp"
+    },
+    "*:8000": {
+      "pass": "applications/entwenibooking"
     }
   },
   "routes": [],
@@ -22,6 +25,13 @@
       "protocol": "asgi",
       "user": "testapp",
       "group": "testapp"
+    },
+    "entwenibooking": {
+      "type": "python3.11",
+      "path": "/var/www/entweni/entwenibooking/src/",
+      "module": "main",
+      "callable": "app",
+      "protocol": "asgi"
     }
   }
 }

@@ -4,27 +4,28 @@
 
     MDTopAppBar:
         id: topbar
+        md_bg_color: app.theme_cls.backgroundColor
         type: "small"
         pos_hint: {'top': 1}
 
-        MDTopAppBarLeadingButtonContainer:
+        # MDTopAppBarLeadingButtonContainer:
 
-            MDActionTopAppBarButton:
-                icon: "menu"
+        #     MDActionTopAppBarButton:
+        #         icon: "menu"
                 # theme_icon_color: "Custom"
                 # icon_color: 0, 1, 0, 1
                 # on_release:
                 #     root.manager.back()
 
         MDTopAppBarTitle:
-            text: "eNtweni"
+            text: "eNtweniBooking"
 
         MDTopAppBarTrailingButtonContainer:
             MDActionTopAppBarButton:
-                icon: "logout"
+                icon: "menu"
                 # theme_icon_color: "Custom"
                 # icon_color: 0, 1, 0, 1
-                on_release: root.manager.push_replacement("welcome")
+                on_release: root.manager.push("settings")
 
     MDScreenManager:
         id: home_screen_manager
@@ -69,12 +70,13 @@
                 text: 'Ride Hailing Screen'
 
     MDNavigationBar:
+        id: home_nav_bar
         type: 'small'
         on_switch_tabs: root.on_switch_tabs(*args)
 
         MDNavigationItem:
             MDNavigationItemIcon:
-                icon: 'gmail'
+                icon: 'home'
             MDNavigationItemLabel:
                 text: 'Home'
 

@@ -2,21 +2,22 @@ import asyncio
 import logging
 from typing import Annotated, Optional
 
-import jwt
+import jwt  # PyJWT
+from database.core import get_async_db
 from fastapi import Cookie, Depends, HTTPException, status
 from httpx import AsyncClient, Response
 from sqlalchemy import and_, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.core.config import settings
-from src.database.core import get_async_db
-
+from .config import auth_settings
 from .models import User
-from .utils import generate_secure_password, get_hashed_password, verify_password
+from .utils import (
+    generate_password_hash,
+    generate_secure_password,
+    verify_password_hash,
+)
 
 logger = logging.getLogger(__name__)
-
-# TODO: Re-implement jwt, module has changed (Breaking change)
 
 
 # Authenticate a user based on username/email and password
@@ -37,7 +38,7 @@ async def authenticate_user(
         db_session, login_identifier=login_identifier
     )
 
-    if user and await verify_password(
+    if user and await verify_password_hash(
         plain_password=password, hashed_password=user.password
     ):
         return user
@@ -95,7 +96,7 @@ async def create_user_from_google_credentials(
     :return: Newly created User object.
     """
     password = await generate_secure_password(20)
-    hashed_password = await get_hashed_password(password=password)
+    hashed_password = await generate_password_hash(password=password)
 
     user = User(
         username=kwargs.get("email"),  # using the Google email as username
@@ -121,7 +122,7 @@ async def verify_google_token(google_access_token: str) -> Optional[dict[str, st
     async with AsyncClient() as client:
         try:
             response: Response = await client.get(
-                f"{settings.GOOGLE_USERINFO_URL}?access_token={google_access_token}"
+                f"{auth_settings.GOOGLE_USERINFO_URL}?access_token={google_access_token}"
             )
             response.raise_for_status()
             user_info: dict[str, str] = response.json()
@@ -160,8 +161,8 @@ async def get_current_user(
     try:
         payload = jwt.decode(
             access_token,
-            settings.JWT_ACCESS_SECRET_KEY,
-            algorithms=[settings.ENCRYPTION_ALGORITHM],
+            auth_settings.JWT_ACCESS_SECRET_KEY,
+            algorithms=[auth_settings.ENCRYPTION_ALGORITHM],
         )
         login_identifier: str = payload.get("sub")
         if not login_identifier:

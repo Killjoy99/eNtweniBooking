@@ -3,6 +3,8 @@ from datetime import datetime, timedelta
 from typing import Annotated, Optional
 
 import jwt
+from core.utils import check_accept_header, templates
+from database.core import get_async_db
 from fastapi import (
     APIRouter,
     BackgroundTasks,
@@ -16,9 +18,6 @@ from fastapi import (
 from fastapi.responses import JSONResponse, RedirectResponse
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from src.core.utils import check_accept_header, templates
-from src.database.core import get_async_db
 
 from .config import auth_settings
 from .models import User
@@ -46,6 +45,7 @@ async def get_me(
     request: Request,
     db_session: AsyncSession = Depends(get_async_db),
     is_template: Optional[bool] = Depends(check_accept_header),
+    user: UserLoginSchema = Depends(get_current_user),
 ):
     """Return the logged-in user's information."""
     user_info = {"message": "Return the logged-in user"}
@@ -86,7 +86,17 @@ async def login(
             password=form.get("password"),  # type: ignore
         )
     else:
-        login_schema = UserLoginSchema(**await request.json())
+        data = await request.json()
+        # if "cookies" in data:
+        #     cookie_tokens = data["cookies"]
+        #     print(cookie_tokens)
+
+        #     try:
+        #         # decode the cookie accordingly (refresh / ACCESS)
+        #         cookie_data = decode_access_token(cookie_tokens)
+        #         login_identifier = cookie_data.get("sub")
+
+        login_schema = UserLoginSchema(**data)
 
     if not login_schema:
         raise HTTPException(
@@ -131,7 +141,8 @@ async def login(
                 "image": user.user_image,
             },
         )
-
+        # log access tokens
+        logger.info(access_token)
         cookies = await set_cookies_and_json(response, access_token, refresh_token)
         background_tasks.add_task(update_user_last_login, db_session, user=user)
 

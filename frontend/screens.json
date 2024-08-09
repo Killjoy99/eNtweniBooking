@@ -30,5 +30,16 @@
         "import": "from uix.baseclass.screens.map import MapScreen",
         "object": "MapScreen()",
         "kv": "uix/kv/screens/map.kv"
+    },
+
+    "settings": {
+        "import": "from uix.baseclass.screens.settings import SettingsScreen",
+        "object": "SettingsScreen()",
+        "kv": "uix/kv/screens/settings/settings.kv"
+    },
+    "settings_account": {
+        "import": "from uix.baseclass.screens.settings import SettingsAccountScreen",
+        "object": "SettingsAccountScreen()",
+        "kv": "uix/kv/screens/settings/account.kv"
     }
 }

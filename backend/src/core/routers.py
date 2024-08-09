@@ -1,13 +1,13 @@
 import logging
 from typing import Optional
 
+from auth.utils import decode_access_token, decode_refresh_token
+from database.core import get_async_db
 from fastapi import APIRouter, Depends, Request, Response
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.auth.utils import decode_access_token, decode_refresh_token
-from src.core.utils import check_accept_header, templates
-from src.database.core import get_async_db
+from core.utils import check_accept_header, templates
 
 logger = logging.getLogger(__name__)
 

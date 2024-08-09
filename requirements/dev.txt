@@ -12,3 +12,8 @@ email-validator
 aiofiles
 redis
 aioredis
+sqlalchemy
+fastapi-limiter
+sqladmin
+passlib
+asyncpg
