@@ -1,0 +1,18 @@
+<CameraScreen>
+
+    BoxLayout:
+        orientation: 'vertical'
+
+        Camera:
+            id: camera
+            play: True
+            resolution: (1080, 720)
+
+        MDButton:
+            on_release: root.capture()
+            pos_hint: {"center_x": .5}
+
+            MDButtonIcon:
+                icon: 'camera'
+            MDButtonText:
+                text: 'Capture'

@@ -29,7 +29,7 @@ body {
 .service-card {
     border: none;
     border-radius: 10px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 20px rgba(0, 1, 0, 0.5);
     transition: transform 0.3s ease;
 }
 
@@ -44,9 +44,10 @@ body {
 
 .footer {
     background-color: #343a40;
-    color: white;
-    padding: 2rem 1rem;
+    color: rgb(53, 151, 7);
+    padding: 0.5rem 1rem;
     text-align: center;
+    vertical-align: middle;
     margin-top: 3rem;
 }
 

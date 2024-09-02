@@ -32,6 +32,13 @@
         "kv": "uix/kv/screens/map.kv"
     },
 
+    "camera": {
+        "import": "from uix.baseclass.screens.camera import CameraScreen",
+        "object": "CameraScreen()",
+        "kv": "uix/kv/screens/camera.kv"
+    },
+
+
     "settings": {
         "import": "from uix.baseclass.screens.settings import SettingsScreen",
         "object": "SettingsScreen()",

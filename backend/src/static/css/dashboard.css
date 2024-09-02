@@ -1,0 +1,31 @@
+body {
+    background-color: #f8f9fa;
+}
+
+.navbar {
+    margin-bottom: 20px;
+}
+
+.card {
+    border: none;
+    border-radius: 10px;
+}
+
+.card-title {
+    font-weight: bold;
+}
+
+.card-text {
+    margin-bottom: 15px;
+}
+
+.list-group-item {
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+}
+
+.list-group-item:not(:last-child) {
+    margin-bottom: 10px;
+    background-color: #e9ecef;
+}

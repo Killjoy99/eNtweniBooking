@@ -30,7 +30,7 @@ class EntweniBooking(MDApp):
 
     def build(self):
         self.root = Root()
-        self.root.push("home")
+        self.root.push("camera")
 
     def health_check(self):
         # Callbacke for user registration connecting to the backend
